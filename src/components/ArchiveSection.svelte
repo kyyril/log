@@ -36,31 +36,12 @@
       </span>
     </h2>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <div class="text-2xl font-bold text-accent mb-1">{stats.total}</div>
-        <div class="text-sm text-text-secondary">Total Items</div>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <div class="text-2xl font-bold text-accent mb-1">{stats.completed}</div>
-        <div class="text-sm text-text-secondary">Completed</div>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <div class="text-2xl font-bold text-accent mb-1">{stats.inProgress}</div>
-        <div class="text-sm text-text-secondary">In Progress</div>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <div class="text-2xl font-bold text-accent mb-1">{stats.totalHours}h</div>
-        <div class="text-sm text-text-secondary">Hours Watched</div>
-      </div>
-    </div>
-
     <div class="flex flex-wrap gap-3 mb-8">
       {#each categories as category}
         <button
           on:click={() => (selectedFilter = category.value)}
           class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
-          class:bg-accent={selectedFilter === category.value}
+          class:bg-black={selectedFilter === category.value}
           class:text-white={selectedFilter === category.value}
           class:bg-gray-200={selectedFilter !== category.value}
           class:text-foreground={selectedFilter !== category.value}
@@ -72,7 +53,7 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     {#each filteredItems as item (item.id)}
       <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
         <ArchiveCard {item} />

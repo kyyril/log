@@ -1,4 +1,4 @@
-export type Category = 'anime' | 'manga' | 'games' | 'movies'
+export type Category = 'anime' | 'manga' | 'games'
 export type Status = 'completed' | 'in-progress' | 'dropped' | 'planned'
 
 export interface ArchiveItem {

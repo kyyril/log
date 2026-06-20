@@ -4,15 +4,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#faf9f7',
-        foreground: '#1a1a1a',
-        accent: '#8ecae6',
-        'accent-light': '#bde0fe',
+        background: '#F5F5F5',
+        foreground: '#121212',
+        accent: '#121212',
+        'accent-light': '#121212',
         'text-secondary': '#666666',
       },
       fontFamily: {
-        sans: ['Lora', 'serif'],
-        mono: ['"JetBrains Mono"', 'monospace'],
+        sans: ['"Work Sans"', 'sans-serif'],
+        mono: ['"Roboto Mono"', 'monospace'],
       },
       fontSize: {
         'title-xl': ['2.5rem', { lineHeight: '1.2' }],
