@@ -9,27 +9,27 @@
   }
 </script>
 
-<header class="sticky top-0 z-50">
-  <div class="px-6 sm:px-8 lg:px-12 py-5 flex items-center justify-between">
+<header class="sticky top-0 z-50 bg-white">
+  <div class="px-6 sm:px-8 lg:px-12 py-2 flex items-center justify-between">
     <div class="flex items-center">
-<button type="button" on:click={() => navigate('')} class="flex items-center hover:opacity-80 transition-opacity">
+      <button type="button" on:click={() => navigate('')} class="flex items-center hover:opacity-80 transition-opacity">
   <img src="/logo.png" alt="Entertainment Archive" class="h-12 w-auto" />
   <div class="flex flex-col leading-none -ml-1 mt-2">
     <span class="text-2xl font-extrabold text-foreground">Log</span>
     <span class="text-[10px] ml-1 font-bold text-foreground -mt-0.5">けっさく</span>
-  </div>
-</button>
+        </div>
+      </button>
     </div>
 
     <nav class="hidden md:flex items-center gap-10 text-sm">
-      <button type="button" on:click={() => navigate('anime')} class="text-foreground hover:text-foreground transition-colors">Anime</button>
-      <button type="button" on:click={() => navigate('manga')} class="text-foreground hover:text-foreground transition-colors">Manga</button>
-      <button type="button" on:click={() => navigate('games')} class="text-foreground hover:text-foreground transition-colors">Games</button>
+      <a href="#anime" class="text-foreground hover:text-foreground transition-colors">Anime</a>
+      <a href="#manga" class="text-foreground hover:text-foreground transition-colors">Manga</a>
+      <a href="#games" class="text-foreground hover:text-foreground transition-colors">Games</a>
     </nav>
 
     <button
       on:click={toggleMenu}
-      class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+      class="md:hidden rounded-lg hover:bg-gray-100 transition-colors"
       aria-label="Toggle menu"
     >
       <svg

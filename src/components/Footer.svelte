@@ -52,7 +52,7 @@
     </div>
 
     <div class="text-center text-xs text-text-secondary">
-      <p>&copy; 2025 Entertainment Archive. All rights reserved.</p>
+      <p>&copy; 2026 Log 傑作. All rights reserved.</p>
     </div>
   </div>
 </footer>

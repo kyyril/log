@@ -23,7 +23,7 @@
     <div>
       <div class="flex items-end justify-between mb-6">
         <h3 class="text-lg font-bold text-foreground">Anime</h3>
-        <a href="#anime" class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</a>
+        <a href="/anime" class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</a>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         {#each anime as item (item.id)}
@@ -35,7 +35,7 @@
     <div>
       <div class="flex items-end justify-between mb-6">
         <h3 class="text-lg font-bold text-foreground">Manga</h3>
-        <a href="#manga" class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</a>
+        <a href="/manga" class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</a>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         {#each manga as item (item.id)}
@@ -47,7 +47,7 @@
     <div>
       <div class="flex items-end justify-between mb-6">
         <h3 class="text-lg font-bold text-foreground">Games</h3>
-        <a href="#games" class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</a>
+        <a href="/games" class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</a>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         {#each games as item (item.id)}

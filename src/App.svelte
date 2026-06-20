@@ -5,38 +5,48 @@
   import AnimePage from './pages/AnimePage.svelte'
   import MangaPage from './pages/MangaPage.svelte'
   import GamesPage from './pages/GamesPage.svelte'
+  import Footer from './components/Footer.svelte'
 
   let current = ''
+  let ready = false
 
   const navigate = (page: string) => {
     current = page
-    window.location.hash = page
+    const url = page ? `/${page}` : '/'
+    window.history.pushState({}, '', url)
   }
 
-  const handleHash = () => {
-    const hash = window.location.hash.replace('#', '')
-    current = hash
+  const handleRoute = () => {
+    const path = window.location.pathname.replace(/^\//, '')
+    if (path === 'anime') current = 'anime'
+    else if (path === 'manga') current = 'manga'
+    else if (path === 'games') current = 'games'
+    else current = ''
   }
 
   if (typeof window !== 'undefined') {
-    window.addEventListener('hashchange', handleHash)
-    handleHash()
+    window.addEventListener('popstate', handleRoute)
+    handleRoute()
+    ready = true
   }
 </script>
 
-<main class="min-h-screen flex flex-col bg-background">
-  <Header {navigate} {current} />
-  {#if current === 'anime'}
-    <AnimePage {navigate} />
-  {:else if current === 'manga'}
-    <MangaPage {navigate} />
-  {:else if current === 'games'}
-    <GamesPage {navigate} />
-  {:else}
-    <AboutSection />
-    <ArchiveSection />
-  {/if}
-</main>
+{#if ready}
+  <main class="min-h-screen flex flex-col bg-background">
+    <Header {navigate} {current} />
+    {#if current === 'anime'}
+      <AnimePage />
+    {:else if current === 'manga'}
+      <MangaPage />
+    {:else if current === 'games'}
+      <GamesPage />
+    {:else}
+      <AboutSection />
+      <ArchiveSection />
+    {/if}
+    <Footer />
+  </main>
+{/if}
 
 <style global>
   :global(html) {

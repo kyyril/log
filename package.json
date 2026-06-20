@@ -1,5 +1,5 @@
 {
-  "name": "entertainment-archive",
+  "name": "log-kessaku",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "svelte": "^5.0.0",
-    "svelte-spa-router": "^5.1.0",
     "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
