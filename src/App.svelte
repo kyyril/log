@@ -35,11 +35,11 @@
   <main class="min-h-screen flex flex-col bg-background">
     <Header {navigate} {current} />
     {#if current === 'anime'}
-      <AnimePage />
+      <AnimePage {navigate} />
     {:else if current === 'manga'}
-      <MangaPage />
+      <MangaPage {navigate} />
     {:else if current === 'games'}
-      <GamesPage />
+      <GamesPage {navigate} />
     {:else}
       <AboutSection />
       <ArchiveSection />

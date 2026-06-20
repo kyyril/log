@@ -10,10 +10,10 @@
 </script>
 
 <header class="sticky top-0 z-50 bg-white">
-  <div class="px-6 sm:px-8 lg:px-12 py-2 flex items-center justify-between">
+  <div class="px-2.5 sm:px-8 lg:px-12 py-2 flex items-center justify-between">
     <div class="flex items-center">
       <button type="button" on:click={() => navigate('')} class="flex items-center hover:opacity-80 transition-opacity">
-  <img src="/logo.png" alt="Entertainment Archive" class="h-12 w-auto" />
+  <img src="/logo.png" alt="Log 傑作" class="h-12 w-auto" />
   <div class="flex flex-col leading-none -ml-1 mt-2">
     <span class="text-2xl font-extrabold text-foreground">Log</span>
     <span class="text-[10px] ml-1 font-bold text-foreground -mt-0.5">けっさく</span>
