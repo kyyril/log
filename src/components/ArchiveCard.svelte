@@ -33,11 +33,10 @@
       <div class="flex items-center gap-2 text-[11px] text-text-secondary">
         <span>{item.year}</span>
         {#if item.hours}
-          <span class="text-gray-300">|</span>
+          <span class="text-gray-300">•</span>
           <span>{item.hours}h</span>
-        {/if}
-        {#if item.chapters}
-          <span class="text-gray-300">|</span>
+        {:else if item.chapters}
+          <span class="text-gray-300">•</span>
           <span>{item.chapters}ch</span>
         {/if}
       </div>

@@ -1,28 +1,10 @@
 <script lang="ts">
   import { archiveItems } from '../data'
-  import type { Category } from '../types'
   import ArchiveCard from './ArchiveCard.svelte'
 
-  type FilterOption = 'all' | Category
-
-  let selectedFilter: FilterOption = 'all'
-
-  const categories: { label: string; value: FilterOption }[] = [
-    { label: 'All', value: 'all' },
-    { label: 'Anime', value: 'anime' },
-    { label: 'Manga', value: 'manga' },
-    { label: 'Games', value: 'games' },
-  ]
-
-  $: filteredItems =
-    selectedFilter === 'all' ? archiveItems : archiveItems.filter((item) => item.category === selectedFilter)
-
-  $: stats = {
-    total: archiveItems.length,
-    completed: archiveItems.filter((item) => item.status === 'completed').length,
-    inProgress: archiveItems.filter((item) => item.status === 'in-progress').length,
-    totalHours: archiveItems.reduce((sum, item) => sum + (item.hours || 0), 0),
-  }
+  const anime = archiveItems.filter((item) => item.category === 'anime').slice(0, 3)
+  const manga = archiveItems.filter((item) => item.category === 'manga').slice(0, 3)
+  const games = archiveItems.filter((item) => item.category === 'games').slice(0, 3)
 </script>
 
 <section id="archive" class="py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
@@ -35,56 +17,43 @@
         OUR COLLECTION
       </span>
     </h2>
-
-    <div class="flex flex-wrap gap-3 mb-8">
-      {#each categories as category}
-        <button
-          on:click={() => (selectedFilter = category.value)}
-          class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
-          class:bg-black={selectedFilter === category.value}
-          class:text-white={selectedFilter === category.value}
-          class:bg-gray-200={selectedFilter !== category.value}
-          class:text-foreground={selectedFilter !== category.value}
-          class:hover:bg-gray-300={selectedFilter !== category.value}
-        >
-          {category.label}
-        </button>
-      {/each}
-    </div>
   </div>
 
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    {#each filteredItems as item (item.id)}
-      <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <ArchiveCard {item} />
+  <div class="space-y-16">
+    <div>
+      <div class="flex items-end justify-between mb-6">
+        <h3 class="text-lg font-bold text-foreground">Anime</h3>
+        <a href="#anime" class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</a>
       </div>
-    {/each}
-  </div>
-
-  {#if filteredItems.length === 0}
-    <div class="text-center py-12">
-      <p class="text-body-lg text-text-secondary">No items found in this category.</p>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {#each anime as item (item.id)}
+          <ArchiveCard {item} />
+        {/each}
+      </div>
     </div>
-  {/if}
+
+    <div>
+      <div class="flex items-end justify-between mb-6">
+        <h3 class="text-lg font-bold text-foreground">Manga</h3>
+        <a href="#manga" class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {#each manga as item (item.id)}
+          <ArchiveCard {item} />
+        {/each}
+      </div>
+    </div>
+
+    <div>
+      <div class="flex items-end justify-between mb-6">
+        <h3 class="text-lg font-bold text-foreground">Games</h3>
+        <a href="#games" class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {#each games as item (item.id)}
+          <ArchiveCard {item} />
+        {/each}
+      </div>
+    </div>
+  </div>
 </section>
-
-<style>
-  :global(#archive) {
-    scroll-margin-top: 80px;
-  }
-
-  :global(.animate-in) {
-    animation: slideUp 0.5s ease-out;
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(16px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>

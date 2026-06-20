@@ -1,4 +1,7 @@
 <script lang="ts">
+  export let current = ''
+  export let navigate: (page: string) => void
+
   let menuOpen = false
 
   const toggleMenu = () => {
@@ -6,18 +9,22 @@
   }
 </script>
 
-<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="text-2xl font-bold text-foreground">EA</div>
-      <div class="text-sm font-medium text-foreground">Entertainment Archive</div>
+<header class="sticky top-0 z-50">
+  <div class="px-6 sm:px-8 lg:px-12 py-5 flex items-center justify-between">
+    <div class="flex items-center">
+<button type="button" on:click={() => navigate('')} class="flex items-center hover:opacity-80 transition-opacity">
+  <img src="/logo.png" alt="Entertainment Archive" class="h-12 w-auto" />
+  <div class="flex flex-col leading-none -ml-1 mt-2">
+    <span class="text-2xl font-extrabold text-foreground">Log</span>
+    <span class="text-[10px] ml-1 font-bold text-foreground -mt-0.5">けっさく</span>
+  </div>
+</button>
     </div>
 
-    <nav class="hidden md:flex items-center gap-8 text-sm">
-      <a href="#home" class="text-foreground hover:text-foreground transition-colors">Home</a>
-      <a href="#about" class="text-foreground hover:text-foreground transition-colors">About</a>
-      <a href="#archive" class="text-foreground hover:text-foreground transition-colors">Archive</a>
-      <a href="#contact" class="text-foreground hover:text-foreground transition-colors">Contact</a>
+    <nav class="hidden md:flex items-center gap-10 text-sm">
+      <button type="button" on:click={() => navigate('anime')} class="text-foreground hover:text-foreground transition-colors">Anime</button>
+      <button type="button" on:click={() => navigate('manga')} class="text-foreground hover:text-foreground transition-colors">Manga</button>
+      <button type="button" on:click={() => navigate('games')} class="text-foreground hover:text-foreground transition-colors">Games</button>
     </nav>
 
     <button
@@ -43,10 +50,9 @@
 
   {#if menuOpen}
     <nav class="md:hidden bg-white border-t border-gray-200 px-4 py-4 flex flex-col gap-4 text-sm">
-      <a href="#home" class="text-foreground hover:text-foreground transition-colors" on:click={() => menuOpen = false}>Home</a>
-      <a href="#about" class="text-foreground hover:text-foreground transition-colors" on:click={() => menuOpen = false}>About</a>
-      <a href="#archive" class="text-foreground hover:text-foreground transition-colors" on:click={() => menuOpen = false}>Archive</a>
-      <a href="#contact" class="text-foreground hover:text-foreground transition-colors" on:click={() => menuOpen = false}>Contact</a>
+      <button type="button" on:click={() => { navigate('anime'); menuOpen = false }} class="text-foreground hover:text-foreground transition-colors text-left">Anime</button>
+      <button type="button" on:click={() => { navigate('manga'); menuOpen = false }} class="text-foreground hover:text-foreground transition-colors text-left">Manga</button>
+      <button type="button" on:click={() => { navigate('games'); menuOpen = false }} class="text-foreground hover:text-foreground transition-colors text-left">Games</button>
     </nav>
   {/if}
 </header>
