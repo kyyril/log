@@ -7,11 +7,11 @@
 
   let selectedFilter: FilterOption = 'all'
 
-  const categories: { label: string; value: FilterOption; icon: string }[] = [
-    { label: 'All', value: 'all', icon: '📚' },
-    { label: 'Anime', value: 'anime', icon: '🎬' },
-    { label: 'Manga', value: 'manga', icon: '📖' },
-    { label: 'Games', value: 'games', icon: '🎮' },
+  const categories: { label: string; value: FilterOption }[] = [
+    { label: 'All', value: 'all' },
+    { label: 'Anime', value: 'anime' },
+    { label: 'Manga', value: 'manga' },
+    { label: 'Games', value: 'games' },
   ]
 
   $: filteredItems =
@@ -66,7 +66,7 @@
           class:text-foreground={selectedFilter !== category.value}
           class:hover:bg-gray-300={selectedFilter !== category.value}
         >
-          {category.icon} {category.label}
+          {category.label}
         </button>
       {/each}
     </div>

@@ -9,7 +9,7 @@
 <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="text-2xl font-bold text-accent">📚</div>
+      <div class="text-2xl font-bold text-accent">EA</div>
       <div class="text-sm font-medium text-foreground">Entertainment Archive</div>
     </div>
 

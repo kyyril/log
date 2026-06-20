@@ -6,8 +6,8 @@ export default {
       colors: {
         background: '#faf9f7',
         foreground: '#1a1a1a',
-        accent: '#4f9e8a',
-        'accent-light': '#7ab9a8',
+        accent: '#8ecae6',
+        'accent-light': '#bde0fe',
         'text-secondary': '#666666',
       },
       fontFamily: {

@@ -82,7 +82,7 @@
         </form>
         {#if submitted}
           <p class="text-sm text-accent mt-2 animate-in fade-in duration-300">
-            ✓ Thanks for subscribing!
+            Thanks for subscribing!
           </p>
         {/if}
       </div>
