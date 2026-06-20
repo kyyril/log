@@ -51,7 +51,7 @@
         class="w-2 h-2 rounded-full transition-all {index === currentImageIndex ? 'bg-white' : 'bg-white/40'}"
         on:click={() => (currentImageIndex = index)}
         aria-label="Go to image {index + 1}"
-      />
+      ></button>
     {/each}
   </div>
 </section>
