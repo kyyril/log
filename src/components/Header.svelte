@@ -22,9 +22,9 @@
     </div>
 
     <nav class="hidden md:flex items-center gap-10 text-sm">
-      <a href="#anime" class="text-foreground hover:text-foreground transition-colors">Anime</a>
-      <a href="#manga" class="text-foreground hover:text-foreground transition-colors">Manga</a>
-      <a href="#games" class="text-foreground hover:text-foreground transition-colors">Games</a>
+      <button type="button" on:click={() => navigate('anime')} class="text-foreground hover:text-foreground transition-colors">Anime</button>
+      <button type="button" on:click={() => navigate('manga')} class="text-foreground hover:text-foreground transition-colors">Manga</button>
+      <button type="button" on:click={() => navigate('games')} class="text-foreground hover:text-foreground transition-colors">Games</button>
     </nav>
 
     <button

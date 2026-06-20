@@ -14,6 +14,7 @@
     current = page
     const url = page ? `/${page}` : '/'
     window.history.pushState({}, '', url)
+    window.scrollTo({ top: 0 })
   }
 
   const handleRoute = () => {
@@ -44,7 +45,7 @@
       <AboutSection />
       <ArchiveSection />
     {/if}
-    <Footer />
+    <Footer {navigate} />
   </main>
 {/if}
 

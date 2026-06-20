@@ -1,4 +1,5 @@
 <script lang="ts">
+  export let navigate: (page: string) => void = () => {}
 </script>
 
 <footer id="contact" class="bg-white mt-16 md:mt-24">
@@ -12,12 +13,12 @@
       </div>
 
       <div>
-        <h3 class="font-bold text-foreground mb-4">Categories</h3>
-        <ul class="text-sm text-text-secondary space-y-2">
-          <li><a href="#archive" class="hover:text-foreground transition-colors">Anime</a></li>
-          <li><a href="#archive" class="hover:text-foreground transition-colors">Manga</a></li>
-          <li><a href="#archive" class="hover:text-foreground transition-colors">Games</a></li>
-        </ul>
+      <h3 class="font-bold text-foreground mb-4">Categories</h3>
+      <ul class="text-sm text-text-secondary space-y-2">
+        <li><button type="button" on:click={() => navigate('anime')} class="hover:text-foreground transition-colors">Anime</button></li>
+        <li><button type="button" on:click={() => navigate('manga')} class="hover:text-foreground transition-colors">Manga</button></li>
+        <li><button type="button" on:click={() => navigate('games')} class="hover:text-foreground transition-colors">Games</button></li>
+      </ul>
       </div>
 
       <div>
