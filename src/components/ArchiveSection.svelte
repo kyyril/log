@@ -14,16 +14,6 @@
 </script>
 
 <section id="archive" class="py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-  <div class="mb-12">
-    <h2 class="text-title-lg md:text-title-xl font-bold text-foreground mb-8">
-      <span
-        class="text-transparent bg-clip-text"
-        style="background-image: linear-gradient(to bottom, transparent 0%, transparent 50%, currentColor 50%, currentColor 100%);"
-      >
-        OUR COLLECTION
-      </span>
-    </h2>
-  </div>
 
   <div class="space-y-20">
     {#each sections as section, i}
@@ -32,9 +22,9 @@
           <img
             src={section.image}
             alt={section.title}
-            class="absolute inset-0 w-full h-full object-contain object-right"
+            class="absolute inset-0 w-full h-full object-contain {section.title === 'ANIME' ? 'object-right' : section.title === 'MANGA' ? 'object-left' : 'object-right'}"
           />
-          <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div class="absolute inset-0 flex pointer-events-none {section.title === 'ANIME' ? 'justify-end pr-8 pt-0 items-start' : section.title === 'MANGA' ? 'justify-start pl-4 items-end pb-4' : 'justify-end pr-8 items-center'}">
             <span class="text-5xl md:text-7xl font-black uppercase tracking-wider text-transparent" style="-webkit-text-stroke: 2px black; paint-order: stroke fill;">
               {section.title}
             </span>
