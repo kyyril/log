@@ -10,7 +10,7 @@ export default defineConfig({
     },
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.svelte'],
   },
-  envPrefix: ['VITE_', 'MAL_'],
+  envPrefix: ['VITE_', 'MAL_', 'RAWG_'],
   server: {
     hmr: {
       overlay: false,
@@ -20,6 +20,11 @@ export default defineConfig({
         target: 'https://api.myanimelist.net/v2',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/myanimelist/, ''),
+      },
+      '/api/rawg': {
+        target: 'https://api.rawg.io/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/rawg/, ''),
       }
     }
   },

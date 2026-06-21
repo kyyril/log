@@ -8,6 +8,7 @@ export interface ArchiveItem {
   year: number
   status: Status
   rating?: number
+  score?: number
   note: string
   imageUrl: string
   hours?: number

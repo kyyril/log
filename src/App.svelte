@@ -47,7 +47,7 @@
 </script>
 
 {#if ready}
-  <main class="min-h-screen flex flex-col bg-background">
+  <main class="min-h-screen flex flex-col bg-background overflow-x-hidden">
     <Header {navigate} />
     {#if current === 'anime'}
       <AnimePage {navigate} />

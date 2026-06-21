@@ -58,6 +58,7 @@ export async function fetchAnimeList(username: string = USERNAME): Promise<Archi
         year,
         status: mapStatus(listStatus.status),
         rating: listStatus.score ? Math.round(listStatus.score / 2) : undefined, // scale 10 to 5 stars
+        score: listStatus.score || undefined, // scale 1-10
         note: listStatus.comments || 'No thoughts recorded.',
         imageUrl: node.main_picture?.large || node.main_picture?.medium || '',
         hours: listStatus.num_episodes_watched ? Math.round(listStatus.num_episodes_watched * 0.4) : undefined // rough estimate: 24 mins per ep
@@ -105,6 +106,7 @@ export async function fetchMangaList(username: string = USERNAME): Promise<Archi
         year,
         status: mapStatus(listStatus.status),
         rating: listStatus.score ? Math.round(listStatus.score / 2) : undefined,
+        score: listStatus.score || undefined,
         note: listStatus.comments || 'No thoughts recorded.',
         imageUrl: node.main_picture?.large || node.main_picture?.medium || '',
         chapters: listStatus.num_chapters_read || undefined
@@ -135,6 +137,7 @@ async function fetchAnimeListJikan(username: string): Promise<ArchiveItem[]> {
       year,
       status: mapStatus(item.status),
       rating: item.score ? Math.round(item.score / 2) : undefined,
+      score: item.score || undefined,
       note: item.comments || 'No thoughts recorded.',
       imageUrl: anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || '',
       hours: item.progress ? Math.round(item.progress * 0.4) : undefined
@@ -161,6 +164,7 @@ async function fetchMangaListJikan(username: string): Promise<ArchiveItem[]> {
       year,
       status: mapStatus(item.status),
       rating: item.score ? Math.round(item.score / 2) : undefined,
+      score: item.score || undefined,
       note: item.comments || 'No thoughts recorded.',
       imageUrl: manga.images?.jpg?.large_image_url || manga.images?.jpg?.image_url || '',
       chapters: item.progress || undefined

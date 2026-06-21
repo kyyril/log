@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { itemsStore } from '../lib/store'
+  import { itemsStore, isLoadingStore } from '../lib/store'
   import ArchiveCard from './ArchiveCard.svelte'
+  import ArchiveCardSkeleton from './ArchiveCardSkeleton.svelte'
   export let navigate: (page: string) => void = () => {}
 
   $: anime = $itemsStore.filter((item) => item.category === 'anime').slice(0, 3)
@@ -33,9 +34,15 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {#each section.items as item (item.id)}
-            <ArchiveCard {item} />
-          {/each}
+          {#if $isLoadingStore && section.items.length === 0}
+            {#each Array(3) as _}
+              <ArchiveCardSkeleton />
+            {/each}
+          {:else}
+            {#each section.items as item (item.id)}
+              <ArchiveCard {item} />
+            {/each}
+          {/if}
         </div>
         <div class="mt-6 text-center">
           <button type="button" on:click={() => navigate(section.href.slice(1))} class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</button>
