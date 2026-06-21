@@ -10,9 +10,17 @@ export default defineConfig({
     },
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.svelte'],
   },
+  envPrefix: ['VITE_', 'MAL_'],
   server: {
     hmr: {
       overlay: false,
     },
+    proxy: {
+      '/api/myanimelist': {
+        target: 'https://api.myanimelist.net/v2',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/myanimelist/, ''),
+      }
+    }
   },
 })

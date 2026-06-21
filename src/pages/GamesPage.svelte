@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { archiveItems } from '../data'
+  import { itemsStore } from '../lib/store'
   import ArchiveCard from '../components/ArchiveCard.svelte'
   export let navigate: (page: string) => void = () => {}
 
-  const items = archiveItems.filter((item) => item.category === 'games')
+  $: items = $itemsStore.filter((item) => item.category === 'games')
   const title = 'GAMES'
 </script>
 

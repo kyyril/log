@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isLoadingStore, errorStore } from '../lib/store'
 </script>
 
 <section id="about" class="py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
@@ -16,9 +17,22 @@
       <p class="text-body-lg text-text-secondary mb-6 leading-relaxed">
         Each entry in this archive is carefully documented with notes about my experience, rating, and the time I spent with it. This is a living project, constantly growing as I discover and experience new entertainment.
       </p>
-      <p class="text-body-lg text-text-secondary leading-relaxed">
+      <p class="text-body-lg text-text-secondary mb-6 leading-relaxed">
         Below you'll find my complete collection organized by category, with personal insights and recommendations for each title.
       </p>
+
+      <div class="mt-6 flex items-center gap-2 text-xs text-text-secondary font-mono">
+        {#if $isLoadingStore}
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse"></span>
+          <span>Syncing with MyAnimeList...</span>
+        {:else if $errorStore}
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500"></span>
+          <span>Failed to sync: {$errorStore} (using fallback offline data)</span>
+        {:else}
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500"></span>
+          <span>Synced with MyAnimeList (user: kyyrill)</span>
+        {/if}
+      </div>
     </div>
   </div>
 </section>

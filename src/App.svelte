@@ -6,7 +6,8 @@
   import MangaPage from './pages/MangaPage.svelte'
   import GamesPage from './pages/GamesPage.svelte'
   import Footer from './components/Footer.svelte'
-  import { afterUpdate } from 'svelte'
+  import { afterUpdate, onMount } from 'svelte'
+  import { loadData } from './lib/store'
 
   let current = ''
   let ready = false
@@ -32,6 +33,10 @@
       scrolling = false
       window.scrollTo({ top: 0 })
     }
+  })
+
+  onMount(() => {
+    loadData()
   })
 
   if (typeof window !== 'undefined') {

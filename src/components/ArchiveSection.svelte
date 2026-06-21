@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { archiveItems } from '../data'
+  import { itemsStore } from '../lib/store'
   import ArchiveCard from './ArchiveCard.svelte'
   export let navigate: (page: string) => void = () => {}
 
-  const anime = archiveItems.filter((item) => item.category === 'anime').slice(0, 3)
-  const manga = archiveItems.filter((item) => item.category === 'manga').slice(0, 3)
-  const games = archiveItems.filter((item) => item.category === 'games').slice(0, 3)
+  $: anime = $itemsStore.filter((item) => item.category === 'anime').slice(0, 3)
+  $: manga = $itemsStore.filter((item) => item.category === 'manga').slice(0, 3)
+  $: games = $itemsStore.filter((item) => item.category === 'games').slice(0, 3)
 
-  const sections = [
+  $: sections = [
     { title: 'ANIME', image: '/section/animeSection.png', items: anime, href: '/anime' },
     { title: 'MANGA', image: '/section/mangaSection.png', items: manga, href: '/manga' },
     { title: 'GAMES', image: '/section/gameSection.png', items: games, href: '/games' },
