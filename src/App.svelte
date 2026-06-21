@@ -5,15 +5,20 @@
   import MangaPage from "./pages/MangaPage.svelte";
   import GamesPage from "./pages/GamesPage.svelte";
   import Footer from "./components/Footer.svelte";
+  import HeroSection from "./components/HeroSection.svelte";
   import { afterUpdate, onMount } from "svelte";
+  import { fade } from "svelte/transition";
   import { loadData } from "./lib/store";
 
   let current = "";
   let ready = false;
   let scrolling = false;
+  // Key used to force transition to re-run on every navigation
+  let transitionKey = 0;
 
   const navigate = (page: string) => {
     current = page;
+    transitionKey += 1;
     const url = page ? `/${page}` : "/";
     window.history.pushState({}, "", url);
     scrolling = true;
@@ -30,7 +35,7 @@
   afterUpdate(() => {
     if (scrolling) {
       scrolling = false;
-      window.scrollTo({ top: 0 });
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
   });
 
@@ -39,7 +44,10 @@
   });
 
   if (typeof window !== "undefined") {
-    window.addEventListener("popstate", handleRoute);
+    window.addEventListener("popstate", () => {
+      handleRoute();
+      transitionKey += 1;
+    });
     handleRoute();
     ready = true;
   }
@@ -48,15 +56,22 @@
 {#if ready}
   <main class="min-h-screen flex flex-col bg-background overflow-x-hidden">
     <Header {navigate} />
-    {#if current === "anime"}
-      <AnimePage {navigate} />
-    {:else if current === "manga"}
-      <MangaPage {navigate} />
-    {:else if current === "games"}
-      <GamesPage {navigate} />
-    {:else}
-      <ArchiveSection {navigate} />
-    {/if}
+
+    {#key transitionKey}
+      <div in:fade={{ duration: 200, delay: 50 }} out:fade={{ duration: 150 }}>
+        {#if current === "anime"}
+          <AnimePage {navigate} />
+        {:else if current === "manga"}
+          <MangaPage {navigate} />
+        {:else if current === "games"}
+          <GamesPage {navigate} />
+        {:else}
+          <HeroSection />
+          <ArchiveSection {navigate} />
+        {/if}
+      </div>
+    {/key}
+
     <Footer {navigate} />
   </main>
 {/if}

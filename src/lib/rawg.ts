@@ -3,17 +3,45 @@ import type { ArchiveItem, Status } from '../types'
 const RAWG_KEY = import.meta.env.RAWG_KEY || ''
 const USERNAME = 'kyyril'
 
-async function fetchBackloggdCover(title: string): Promise<string | null> {
+// Permanent cover cache — never expires, covers don't change
+const COVER_CACHE_KEY = 'rawg_cover_cache'
+
+function loadCoverCache(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem(COVER_CACHE_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
+
+function saveCoverCache(cache: Record<string, string>) {
+  try {
+    localStorage.setItem(COVER_CACHE_KEY, JSON.stringify(cache))
+  } catch {
+    // localStorage full — skip silently
+  }
+}
+
+async function fetchBackloggdCover(title: string, cache: Record<string, string>): Promise<string | null> {
+  // Return from permanent cache if available
+  if (cache[title]) return cache[title]
+
   const targetUrl = `https://www.backloggd.com/search/results.turbo_stream?page=1&query=${encodeURIComponent(title)}&type=games`
   const url = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
   try {
     const res = await fetch(url)
     if (!res.ok) return null
     const html = await res.text()
-    
-    // Scrape the first vertical cover image URL
+
+    // Scrape first vertical IGDB cover image
     const match = html.match(/<img\s+class="card-img height"\s+src="([^"]+)"/i)
-    return match ? match[0].match(/src="([^"]+)"/)?.[1] || match[1] : null
+    const coverUrl = match?.[1] ?? null
+
+    if (coverUrl) {
+      cache[title] = coverUrl  // persist for next visit
+    }
+    return coverUrl
   } catch (e) {
     console.warn(`Failed to scrape cover from Backloggd for "${title}":`, e)
     return null
@@ -38,8 +66,11 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
   const gamesMap = new Map<number, ArchiveItem>()
   const rawgGames: { game: any; appStatus: Status }[] = []
 
+  // Load permanent cover cache before fetching
+  const coverCache = loadCoverCache()
+
   try {
-    // 1. Fetch user game list per status from RAWG API
+    // 1. Fetch user game list per status from RAWG
     await Promise.all(
       statuses.map(async ({ rawgStatus, appStatus }) => {
         const url = import.meta.env.DEV
@@ -52,12 +83,9 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
 
         if (json.results) {
           json.results.forEach((game: any) => {
-            // Keep unique games, prioritize completed status if it exists
             const existingIdx = rawgGames.findIndex(item => item.game.id === game.id)
             if (existingIdx !== -1) {
-              if (appStatus === 'completed') {
-                rawgGames[existingIdx].appStatus = 'completed'
-              }
+              if (appStatus === 'completed') rawgGames[existingIdx].appStatus = 'completed'
             } else {
               rawgGames.push({ game, appStatus })
             }
@@ -66,13 +94,11 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
       })
     )
 
-    // 2. Fetch Backloggd vertical cover arts in parallel
+    // 2. Fetch Backloggd covers (uses cache — only fetches uncached titles)
     await Promise.all(
       rawgGames.map(async ({ game, appStatus }) => {
-        const backloggdCover = await fetchBackloggdCover(game.name)
+        const backloggdCover = await fetchBackloggdCover(game.name, coverCache)
         const year = game.released ? new Date(game.released).getFullYear() : 0
-        
-        // Extract genres and platforms
         const platforms = game.platforms ? game.platforms.map((p: any) => p.platform.name) : []
         const genres = game.genres ? game.genres.map((g: any) => g.name) : []
 
@@ -92,6 +118,9 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
         })
       })
     )
+
+    // 3. Persist the updated cover cache (with any new entries)
+    saveCoverCache(coverCache)
 
   } catch (error) {
     console.error('Failed to fetch from RAWG or Backloggd:', error)

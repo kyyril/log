@@ -2,6 +2,7 @@
   import { itemsStore, isLoadingStore } from '../lib/store'
   import ArchiveCard from './ArchiveCard.svelte'
   import ArchiveCardSkeleton from './ArchiveCardSkeleton.svelte'
+  import { reveal } from '../lib/reveal'
   export let navigate: (page: string) => void = () => {}
 
   $: anime = $itemsStore.filter((item) => item.category === 'anime').slice(0, 3)
@@ -19,7 +20,7 @@
 
   <div class="space-y-20">
     {#each sections as section, i}
-      <div>
+      <div use:reveal={{ delay: i * 80 }}>
         <div class="relative w-full h-40 md:h-56 mb-8 overflow-hidden rounded-lg">
           <img
             src={section.image}
@@ -39,13 +40,16 @@
               <ArchiveCardSkeleton />
             {/each}
           {:else}
-            {#each section.items as item (item.id)}
-              <ArchiveCard {item} />
+            {#each section.items as item, j (item.id)}
+              <div use:reveal={{ delay: j * 70 }}>
+                <ArchiveCard {item} />
+              </div>
             {/each}
           {/if}
         </div>
+
         <div class="mt-6 text-center">
-          <button type="button" on:click={() => navigate(section.href.slice(1))} class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</button>
+          <button type="button" on:click={() => navigate(section.href.slice(1))} class="px-4 py-2 text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</button>
         </div>
       </div>
     {/each}

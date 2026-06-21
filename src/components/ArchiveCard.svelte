@@ -29,7 +29,7 @@
     rel="noopener noreferrer"
     class="block text-left w-full group"
   >
-    <div class="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 transition duration-300 group-hover:shadow-md relative">
+    <div class="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 transition duration-300 relative">
       <img
         src={poster}
         alt={item.title}
@@ -37,7 +37,7 @@
         loading="lazy"
         on:error={handleImgError}
       />
-      <div class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-white text-[9px] font-bold px-2 py-0.5 rounded shadow tracking-wider">
+      <div class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-white text-[9px] font-bold px-2 py-0.5 rounded tracking-wider">
         MAL ↗
       </div>
     </div>
@@ -79,7 +79,7 @@
     rel="noopener noreferrer"
     class="block text-left w-full group"
   >
-    <div class="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 transition duration-300 group-hover:shadow-md relative">
+    <div class="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 transition duration-300 relative">
       <img
         src={poster}
         alt={item.title}
@@ -87,7 +87,7 @@
         loading="lazy"
         on:error={handleImgError}
       />
-      <div class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-white text-[9px] font-bold px-2 py-0.5 rounded shadow tracking-wider">
+      <div class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-white text-[9px] font-bold px-2 py-0.5 rounded tracking-wider">
         RAWG ↗
       </div>
     </div>
@@ -113,7 +113,7 @@
         </div>
 
         {#if item.metacritic}
-          {@const mcColor = item.metacritic >= 75 ? 'text-[#6c3] bg-[#6c3]/10 border border-[#6c3]/15' : (item.metacritic >= 50 ? 'text-[#fc3] bg-[#fc3]/10 border border-[#fc3]/15' : 'text-[#f33] bg-[#f33]/10 border border-[#f33]/15')}
+          {@const mcColor = item.metacritic >= 75 ? 'text-[#6c3] bg-[#6c3]/10' : (item.metacritic >= 50 ? 'text-[#fc3] bg-[#fc3]/10' : 'text-[#f33] bg-[#f33]/10')}
           <div class="text-[9px] font-bold px-1.5 py-0.5 rounded font-mono flex-shrink-0 {mcColor}">
             MC {item.metacritic}
           </div>

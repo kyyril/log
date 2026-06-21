@@ -2,6 +2,7 @@
   import { itemsStore, isLoadingStore } from "../lib/store";
   import ArchiveCard from "../components/ArchiveCard.svelte";
   import ArchiveCardSkeleton from "../components/ArchiveCardSkeleton.svelte";
+  import { reveal } from "../lib/reveal";
   import type { Status } from "../types";
 
   export let navigate: (page: string) => void = () => {};
@@ -71,7 +72,7 @@
           type="text"
           placeholder="Search anime..."
           bind:value={searchQuery}
-          class="w-full pl-8 pr-4 py-2 border border-foreground/10 rounded-lg bg-gray-50/50 text-sm focus:outline-none focus:border-foreground focus:bg-white transition-all"
+          class="w-full pl-8 pr-4 py-2 rounded-lg bg-gray-50/50 text-sm focus:outline-none focus:bg-white transition-all"
         />
         <svg
           class="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-text-secondary"
@@ -91,7 +92,7 @@
       <!-- Status Dropdown (Select) -->
       <select
         bind:value={selectedStatus}
-        class="px-2.5 py-2 border border-foreground/10 rounded-lg bg-gray-50/50 text-xs font-semibold text-text-secondary uppercase focus:outline-none focus:border-foreground focus:bg-white transition-all cursor-pointer"
+        class="px-2.5 py-2 rounded-lg bg-gray-50/50 text-xs font-semibold text-text-secondary uppercase focus:outline-none focus:bg-white transition-all cursor-pointer"
       >
         <option value="all">All Status</option>
         <option value="completed">Completed</option>
@@ -117,8 +118,10 @@
         No anime match your criteria.
       </div>
     {:else}
-      {#each filteredItems as item (item.id)}
-        <ArchiveCard {item} />
+      {#each filteredItems as item, i (item.id)}
+        <div use:reveal={{ delay: (i % 4) * 60 }}>
+          <ArchiveCard {item} />
+        </div>
       {/each}
     {/if}
   </div>
