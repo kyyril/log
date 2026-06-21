@@ -43,7 +43,7 @@
       <GamesPage {navigate} />
     {:else}
       <AboutSection />
-      <ArchiveSection />
+      <ArchiveSection {navigate} />
     {/if}
     <Footer {navigate} />
   </main>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { archiveItems } from '../data'
   import ArchiveCard from './ArchiveCard.svelte'
+  export let navigate: (page: string) => void = () => {}
 
   const anime = archiveItems.filter((item) => item.category === 'anime').slice(0, 3)
   const manga = archiveItems.filter((item) => item.category === 'manga').slice(0, 3)
@@ -37,7 +38,7 @@
           {/each}
         </div>
         <div class="mt-6 text-center">
-          <a href={section.href} class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</a>
+          <button type="button" on:click={() => navigate(section.href.slice(1))} class="px-4 py-2 border border-foreground text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</button>
         </div>
       </div>
     {/each}
