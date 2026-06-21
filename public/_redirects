@@ -1,2 +1,1 @@
-# No redirect rules needed.
-# Cloudflare Pages handles SPA routing natively when no 404.html is present.
+/*  /index.html  200
