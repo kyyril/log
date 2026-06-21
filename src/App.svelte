@@ -9,12 +9,15 @@
   import { afterUpdate, onMount } from "svelte";
   import { fade } from "svelte/transition";
   import { loadData } from "./lib/store";
+  import Lenis from "lenis";
 
   let current = "";
   let ready = false;
   let scrolling = false;
   // Key used to force transition to re-run on every navigation
   let transitionKey = 0;
+
+  let lenisInstance: Lenis | null = null;
 
   const navigate = (page: string) => {
     current = page;
@@ -35,12 +38,40 @@
   afterUpdate(() => {
     if (scrolling) {
       scrolling = false;
-      window.scrollTo({ top: 0, behavior: "instant" });
+      if (lenisInstance) {
+        lenisInstance.scrollTo(0, { immediate: true });
+      } else {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
     }
   });
 
   onMount(() => {
     loadData();
+
+    // Initialize Lenis smooth scroll
+    lenisInstance = new Lenis({
+      duration: 1.1, // fast and responsive
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // ultra smooth easing
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+      infinite: false,
+    });
+
+    let rafId: number;
+    function raf(time: number) {
+      lenisInstance?.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenisInstance?.destroy();
+    };
   });
 
   if (typeof window !== "undefined") {
