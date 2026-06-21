@@ -25,12 +25,7 @@ const mapStatus = (malStatus: string): Status => {
 export async function fetchAnimeList(username: string = USERNAME): Promise<ArchiveItem[]> {
   const fields = 'list_status{comments,score,num_episodes_watched},start_season,start_date'
   const limit = 100
-  const malUrl = `https://api.myanimelist.net/v2/users/${username}/animelist?limit=${limit}&fields=${fields}`
-  
-  // Use Vite proxy in development, direct URL in production
-  const url = import.meta.env.DEV
-    ? `/api/myanimelist/users/${username}/animelist?limit=${limit}&fields=${encodeURIComponent(fields)}`
-    : malUrl
+  const url = `/api/myanimelist/users/${username}/animelist?limit=${limit}&fields=${encodeURIComponent(fields)}`
 
   try {
     const headers: Record<string, string> = {}
@@ -74,12 +69,7 @@ export async function fetchAnimeList(username: string = USERNAME): Promise<Archi
 export async function fetchMangaList(username: string = USERNAME): Promise<ArchiveItem[]> {
   const fields = 'list_status{comments,score,num_chapters_read},start_date'
   const limit = 100
-  const malUrl = `https://api.myanimelist.net/v2/users/${username}/mangalist?limit=${limit}&fields=${fields}`
-  
-  // Use Vite proxy in development, direct URL in production
-  const url = import.meta.env.DEV
-    ? `/api/myanimelist/users/${username}/mangalist?limit=${limit}&fields=${encodeURIComponent(fields)}`
-    : malUrl
+  const url = `/api/myanimelist/users/${username}/mangalist?limit=${limit}&fields=${encodeURIComponent(fields)}`
 
   try {
     const headers: Record<string, string> = {}

@@ -1,0 +1,21 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/rawg/:path*",
+      "destination": "https://api.rawg.io/api/:path*"
+    },
+    {
+      "source": "/api/myanimelist/:path*",
+      "destination": "https://api.myanimelist.net/v2/:path*"
+    },
+    {
+      "source": "/api/backloggd",
+      "destination": "https://www.backloggd.com/search/results.turbo_stream"
+    },
+    {
+      "source": "/((?!api/|assets/|logo.png|footerImage.png|section/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -25,6 +25,11 @@ export default defineConfig({
         target: 'https://api.rawg.io/api',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/rawg/, ''),
+      },
+      '/api/backloggd': {
+        target: 'https://www.backloggd.com/search/results.turbo_stream',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/backloggd/, ''),
       }
     }
   },

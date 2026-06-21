@@ -27,8 +27,7 @@ async function fetchBackloggdCover(title: string, cache: Record<string, string>)
   // Return from permanent cache if available
   if (cache[title]) return cache[title]
 
-  const targetUrl = `https://www.backloggd.com/search/results.turbo_stream?page=1&query=${encodeURIComponent(title)}&type=games`
-  const url = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+  const url = `/api/backloggd?page=1&query=${encodeURIComponent(title)}&type=games`
   try {
     const res = await fetch(url)
     if (!res.ok) return null
@@ -73,9 +72,7 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
     // 1. Fetch user game list per status from RAWG
     await Promise.all(
       statuses.map(async ({ rawgStatus, appStatus }) => {
-        const url = import.meta.env.DEV
-          ? `/api/rawg/users/${username}/games?key=${RAWG_KEY}&statuses=${rawgStatus}&page_size=100`
-          : `https://api.rawg.io/api/users/${username}/games?key=${RAWG_KEY}&statuses=${rawgStatus}&page_size=100`
+        const url = `/api/rawg/users/${username}/games?key=${RAWG_KEY}&statuses=${rawgStatus}&page_size=100`
 
         const res = await fetch(url)
         if (!res.ok) throw new Error(`RAWG API returned ${res.status}`)
