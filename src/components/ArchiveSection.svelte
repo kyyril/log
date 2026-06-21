@@ -5,9 +5,9 @@
   import { reveal } from '../lib/reveal'
   export let navigate: (page: string) => void = () => {}
 
-  $: anime = $itemsStore.filter((item) => item.category === 'anime').slice(0, 3)
-  $: manga = $itemsStore.filter((item) => item.category === 'manga').slice(0, 3)
-  $: games = $itemsStore.filter((item) => item.category === 'games').slice(0, 3)
+  $: anime = $itemsStore.filter((item) => item.category === 'anime').slice(0, 8)
+  $: manga = $itemsStore.filter((item) => item.category === 'manga').slice(0, 8)
+  $: games = $itemsStore.filter((item) => item.category === 'games').slice(0, 8)
 
   $: sections = [
     { title: 'ANIME', image: '/section/animeSection.png', items: anime, href: '/anime' },
@@ -34,14 +34,16 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {#if $isLoadingStore && section.items.length === 0}
-            {#each Array(3) as _}
-              <ArchiveCardSkeleton />
+            {#each Array(8) as _, j}
+              <div class={j >= 4 ? 'hidden lg:block' : ''}>
+                <ArchiveCardSkeleton />
+              </div>
             {/each}
           {:else}
             {#each section.items as item, j (item.id)}
-              <div use:reveal={{ delay: j * 70 }}>
+              <div use:reveal={{ delay: j * 70 }} class={j >= 4 ? 'hidden lg:block' : ''}>
                 <ArchiveCard {item} />
               </div>
             {/each}

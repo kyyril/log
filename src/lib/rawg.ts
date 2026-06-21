@@ -27,9 +27,20 @@ async function fetchBackloggdCover(title: string, cache: Record<string, string>)
   // Return from permanent cache if available
   if (cache[title]) return cache[title]
 
-  const url = `/api/backloggd?page=1&query=${encodeURIComponent(title)}&type=games`
+  // Clean special characters that cause Backloggd's search parser to throw a 500 Internal Server Error
+  const cleanTitle = title
+    .replace(/['"’“”‘:—\-–]/g, ' ') // Replace quotes, colons, dashes with spaces
+    .replace(/\s+/g, ' ')           // Collapse multiple spaces
+    .trim()
+
+  const url = `/api/backloggd?page=1&query=${encodeURIComponent(cleanTitle)}&type=games`
+  
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 800) // Strict 800ms timeout
+
   try {
-    const res = await fetch(url)
+    const res = await fetch(url, { signal: controller.signal })
+    clearTimeout(timeoutId)
     if (!res.ok) return null
     const html = await res.text()
 
@@ -42,7 +53,8 @@ async function fetchBackloggdCover(title: string, cache: Record<string, string>)
     }
     return coverUrl
   } catch (e) {
-    console.warn(`Failed to scrape cover from Backloggd for "${title}":`, e)
+    clearTimeout(timeoutId)
+    // Fail fast and silently to prevent blocking the UI
     return null
   }
 }
@@ -91,36 +103,31 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
       })
     )
 
-    // 2. Fetch Backloggd covers (uses cache — only fetches uncached titles)
-    await Promise.all(
-      rawgGames.map(async ({ game, appStatus }) => {
-        const backloggdCover = await fetchBackloggdCover(game.name, coverCache)
-        const year = game.released ? new Date(game.released).getFullYear() : 0
-        const platforms = game.platforms ? game.platforms.map((p: any) => p.platform.name) : []
-        const genres = game.genres ? game.genres.map((g: any) => g.name) : []
+    // 2. Map games instantly using existing cached covers or rawg backgrounds
+    rawgGames.forEach(({ game, appStatus }) => {
+      const year = game.released ? new Date(game.released).getFullYear() : 0
+      const platforms = game.platforms ? game.platforms.map((p: any) => p.platform.name) : []
+      const genres = game.genres ? game.genres.map((g: any) => g.name) : []
+      const cachedCover = coverCache[game.name] || game.background_image || ''
 
-        gamesMap.set(game.id, {
-          id: `games-${game.id}`,
-          title: game.name,
-          category: 'games',
-          year,
-          status: appStatus,
-          note: 'No thoughts recorded.',
-          imageUrl: backloggdCover || game.background_image || '',
-          hours: game.playtime || undefined,
-          metacritic: game.metacritic || undefined,
-          platforms,
-          genres,
-          slug: game.slug
-        })
+      gamesMap.set(game.id, {
+        id: `games-${game.id}`,
+        title: game.name,
+        category: 'games',
+        year,
+        status: appStatus,
+        note: 'No thoughts recorded.',
+        imageUrl: cachedCover,
+        hours: game.playtime || undefined,
+        metacritic: game.metacritic || undefined,
+        platforms,
+        genres,
+        slug: game.slug
       })
-    )
-
-    // 3. Persist the updated cover cache (with any new entries)
-    saveCoverCache(coverCache)
+    })
 
   } catch (error) {
-    console.error('Failed to fetch from RAWG or Backloggd:', error)
+    console.error('Failed to fetch from RAWG:', error)
   }
 
   return Array.from(gamesMap.values())

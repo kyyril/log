@@ -1,11 +1,19 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import type { ArchiveItem } from '../types'
 
   export let item: ArchiveItem
 
   let imgError = false
   const fallback = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300"><rect width="100%" height="100%" fill="%23e5e7eb"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="14" fill="%239ca3af">NO IMAGE</text></svg>'
-  $: poster = imgError ? fallback : item.imageUrl
+  
+  let dynamicImageUrl = item.imageUrl
+  $: poster = imgError ? fallback : dynamicImageUrl
+
+  // Reset dynamicImageUrl if item changes
+  $: {
+    dynamicImageUrl = item.imageUrl
+  }
 
   const handleImgError = () => {
     imgError = true
@@ -19,6 +27,47 @@
     return `https://myanimelist.net/${item.category}/${malId}`
   }
   const malUrl = getMalUrl()
+
+  onMount(async () => {
+    // If it's a game and it doesn't have a Backloggd cover yet (indicated by rawg.io background in imageUrl)
+    if (item.category === 'games' && item.imageUrl && item.imageUrl.includes('rawg.io')) {
+      const COVER_CACHE_KEY = 'rawg_cover_cache'
+      const cached = localStorage.getItem(COVER_CACHE_KEY)
+      const cache = cached ? JSON.parse(cached) : {}
+
+      // Double check cache first
+      if (cache[item.title]) {
+        dynamicImageUrl = cache[item.title]
+      } else {
+        // Sanitize search title
+        const cleanTitle = item.title
+          .replace(/['"’“”‘:—\-–]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+
+        const url = `/api/backloggd?page=1&query=${encodeURIComponent(cleanTitle)}&type=games`
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 1200) // generous 1.2s timeout for individual lazy load
+
+        try {
+          const res = await fetch(url, { signal: controller.signal })
+          clearTimeout(timeoutId)
+          if (res.ok) {
+            const html = await res.text()
+            const match = html.match(/<img\s+class="card-img height"\s+src="([^"]+)"/i)
+            const coverUrl = match?.[1] ?? null
+            if (coverUrl) {
+              dynamicImageUrl = coverUrl
+              cache[item.title] = coverUrl
+              localStorage.setItem(COVER_CACHE_KEY, JSON.stringify(cache))
+            }
+          }
+        } catch {
+          clearTimeout(timeoutId)
+        }
+      }
+    }
+  })
 </script>
 
 {#if malUrl}

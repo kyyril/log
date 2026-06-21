@@ -104,7 +104,7 @@
 
     <!-- Personal rating note -->
     <p class="text-[10px] text-text-secondary/60 font-mono mt-2">
-      Scores are personal ratings from my MyAnimeList account.
+      Just my personal ratings.
     </p>
   </div>
 
