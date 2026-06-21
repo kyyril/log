@@ -6,15 +6,17 @@
   import MangaPage from './pages/MangaPage.svelte'
   import GamesPage from './pages/GamesPage.svelte'
   import Footer from './components/Footer.svelte'
+  import { afterUpdate } from 'svelte'
 
   let current = ''
   let ready = false
+  let scrolling = false
 
   const navigate = (page: string) => {
     current = page
     const url = page ? `/${page}` : '/'
     window.history.pushState({}, '', url)
-    window.scrollTo({ top: 0 })
+    scrolling = true
   }
 
   const handleRoute = () => {
@@ -25,6 +27,13 @@
     else current = ''
   }
 
+  afterUpdate(() => {
+    if (scrolling) {
+      scrolling = false
+      window.scrollTo({ top: 0 })
+    }
+  })
+
   if (typeof window !== 'undefined') {
     window.addEventListener('popstate', handleRoute)
     handleRoute()
@@ -34,7 +43,7 @@
 
 {#if ready}
   <main class="min-h-screen flex flex-col bg-background">
-    <Header {navigate} {current} />
+    <Header {navigate} />
     {#if current === 'anime'}
       <AnimePage {navigate} />
     {:else if current === 'manga'}

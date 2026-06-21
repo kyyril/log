@@ -1,5 +1,4 @@
 <script lang="ts">
-  export let current = ''
   export let navigate: (page: string) => void
 
   let menuOpen = false
@@ -50,6 +49,7 @@
 
   {#if menuOpen}
     <nav class="md:hidden bg-white border-t border-gray-200 px-4 py-4 flex flex-col gap-4 text-sm">
+      <button type="button" on:click={() => { navigate(''); menuOpen = false }} class="text-foreground hover:text-foreground transition-colors text-left">Home</button>
       <button type="button" on:click={() => { navigate('anime'); menuOpen = false }} class="text-foreground hover:text-foreground transition-colors text-left">Anime</button>
       <button type="button" on:click={() => { navigate('manga'); menuOpen = false }} class="text-foreground hover:text-foreground transition-colors text-left">Manga</button>
       <button type="button" on:click={() => { navigate('games'); menuOpen = false }} class="text-foreground hover:text-foreground transition-colors text-left">Games</button>
