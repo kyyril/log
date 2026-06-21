@@ -13,4 +13,8 @@ export interface ArchiveItem {
   imageUrl: string
   hours?: number
   chapters?: number
+  metacritic?: number
+  platforms?: string[]
+  genres?: string[]
+  slug?: string
 }

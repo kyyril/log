@@ -22,6 +22,7 @@
 </script>
 
 {#if malUrl}
+  <!-- Anime / Manga Card linked to MAL -->
   <a
     href={malUrl}
     target="_blank"
@@ -58,11 +59,11 @@
           {/if}
         </div>
 
-        {#if item.category !== 'games' && item.score}
+        {#if item.score}
           <div class="text-[10px] font-bold text-yellow-600 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono flex-shrink-0">
             ★ {item.score}/10
           </div>
-        {:else if item.category !== 'games' && item.rating}
+        {:else if item.rating}
           <div class="text-[10px] font-bold text-yellow-600 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono flex-shrink-0">
             ★ {item.rating * 2}/10
           </div>
@@ -70,7 +71,58 @@
       </div>
     </div>
   </a>
+{:else if item.category === 'games' && item.slug}
+  <!-- Games Card linked to RAWG -->
+  <a
+    href="https://rawg.io/games/{item.slug}"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="block text-left w-full group"
+  >
+    <div class="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 transition duration-300 group-hover:shadow-md relative">
+      <img
+        src={poster}
+        alt={item.title}
+        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+        loading="lazy"
+        on:error={handleImgError}
+      />
+      <div class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-white text-[9px] font-bold px-2 py-0.5 rounded shadow tracking-wider">
+        RAWG ↗
+      </div>
+    </div>
+
+    <div class="px-1.5 py-2 sm:p-3">
+      <h3 class="text-[11px] sm:text-sm font-bold text-foreground truncate mb-0.5 transition-colors group-hover:text-foreground/80">
+        {item.title}
+      </h3>
+
+      {#if item.platforms && item.platforms.length > 0}
+        <div class="text-[9px] text-text-secondary/70 truncate mb-1">
+          {item.platforms.slice(0, 3).join(' • ')}
+        </div>
+      {/if}
+
+      <div class="flex items-center justify-between gap-1 mt-1">
+        <div class="flex items-center gap-1 text-[10px] text-text-secondary font-mono">
+          <span>{item.year}</span>
+          {#if item.hours}
+            <span class="text-gray-300">•</span>
+            <span>{item.hours}h</span>
+          {/if}
+        </div>
+
+        {#if item.metacritic}
+          {@const mcColor = item.metacritic >= 75 ? 'text-[#6c3] bg-[#6c3]/10 border border-[#6c3]/15' : (item.metacritic >= 50 ? 'text-[#fc3] bg-[#fc3]/10 border border-[#fc3]/15' : 'text-[#f33] bg-[#f33]/10 border border-[#f33]/15')}
+          <div class="text-[9px] font-bold px-1.5 py-0.5 rounded font-mono flex-shrink-0 {mcColor}">
+            MC {item.metacritic}
+          </div>
+        {/if}
+      </div>
+    </div>
+  </a>
 {:else}
+  <!-- Fallback static representation -->
   <div class="text-left w-full">
     <div class="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200">
       <img
@@ -93,21 +145,8 @@
           {#if item.hours}
             <span class="text-gray-300">•</span>
             <span>{item.hours}h</span>
-          {:else if item.chapters}
-            <span class="text-gray-300">•</span>
-            <span>{item.chapters}ch</span>
           {/if}
         </div>
-
-        {#if item.category !== 'games' && item.score}
-          <div class="text-[10px] font-bold text-yellow-600 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono flex-shrink-0">
-            ★ {item.score}/10
-          </div>
-        {:else if item.category !== 'games' && item.rating}
-          <div class="text-[10px] font-bold text-yellow-600 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono flex-shrink-0">
-            ★ {item.rating * 2}/10
-          </div>
-        {/if}
       </div>
     </div>
   </div>

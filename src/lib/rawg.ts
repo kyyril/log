@@ -3,6 +3,23 @@ import type { ArchiveItem, Status } from '../types'
 const RAWG_KEY = import.meta.env.RAWG_KEY || ''
 const USERNAME = 'kyyril'
 
+async function fetchBackloggdCover(title: string): Promise<string | null> {
+  const targetUrl = `https://www.backloggd.com/search/results.turbo_stream?page=1&query=${encodeURIComponent(title)}&type=games`
+  const url = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+  try {
+    const res = await fetch(url)
+    if (!res.ok) return null
+    const html = await res.text()
+    
+    // Scrape the first vertical cover image URL
+    const match = html.match(/<img\s+class="card-img height"\s+src="([^"]+)"/i)
+    return match ? match[0].match(/src="([^"]+)"/)?.[1] || match[1] : null
+  } catch (e) {
+    console.warn(`Failed to scrape cover from Backloggd for "${title}":`, e)
+    return null
+  }
+}
+
 export async function fetchGameList(username: string = USERNAME): Promise<ArchiveItem[]> {
   if (!RAWG_KEY) {
     console.warn('RAWG_KEY is not defined in environment variables.')
@@ -19,8 +36,10 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
   ]
 
   const gamesMap = new Map<number, ArchiveItem>()
+  const rawgGames: { game: any; appStatus: Status }[] = []
 
   try {
+    // 1. Fetch user game list per status from RAWG API
     await Promise.all(
       statuses.map(async ({ rawgStatus, appStatus }) => {
         const url = import.meta.env.DEV
@@ -33,30 +52,49 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
 
         if (json.results) {
           json.results.forEach((game: any) => {
-            const existing = gamesMap.get(game.id)
-            // If the game is already resolved as completed, don't overwrite it with in-progress/owned status
-            if (existing && existing.status === 'completed') {
-              return
+            // Keep unique games, prioritize completed status if it exists
+            const existingIdx = rawgGames.findIndex(item => item.game.id === game.id)
+            if (existingIdx !== -1) {
+              if (appStatus === 'completed') {
+                rawgGames[existingIdx].appStatus = 'completed'
+              }
+            } else {
+              rawgGames.push({ game, appStatus })
             }
-
-            const year = game.released ? new Date(game.released).getFullYear() : 0
-
-            gamesMap.set(game.id, {
-              id: `games-${game.id}`,
-              title: game.name,
-              category: 'games',
-              year,
-              status: appStatus,
-              note: 'No thoughts recorded.',
-              imageUrl: game.background_image || '',
-              hours: game.playtime || undefined
-            })
           })
         }
       })
     )
+
+    // 2. Fetch Backloggd vertical cover arts in parallel
+    await Promise.all(
+      rawgGames.map(async ({ game, appStatus }) => {
+        const backloggdCover = await fetchBackloggdCover(game.name)
+        const year = game.released ? new Date(game.released).getFullYear() : 0
+        
+        // Extract genres and platforms
+        const platforms = game.platforms ? game.platforms.map((p: any) => p.platform.name) : []
+        const genres = game.genres ? game.genres.map((g: any) => g.name) : []
+
+        gamesMap.set(game.id, {
+          id: `games-${game.id}`,
+          title: game.name,
+          category: 'games',
+          year,
+          status: appStatus,
+          note: 'No thoughts recorded.',
+          imageUrl: backloggdCover || game.background_image || '',
+          hours: game.playtime || undefined,
+          metacritic: game.metacritic || undefined,
+          platforms,
+          genres,
+          slug: game.slug
+        })
+      })
+    )
+
   } catch (error) {
-    console.error('Failed to fetch from RAWG:', error)
+    console.error('Failed to fetch from RAWG or Backloggd:', error)
   }
 
   return Array.from(gamesMap.values())
