@@ -78,6 +78,6 @@
 
 <style global>
   :global(html) {
-    background-color: #faf9f7;
+    background-color: #ffffff;
   }
 </style>
