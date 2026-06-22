@@ -81,27 +81,28 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
   const coverCache = loadCoverCache()
 
   try {
-    // 1. Fetch user game list per status from RAWG
-    await Promise.all(
-      statuses.map(async ({ rawgStatus, appStatus }) => {
-        const url = `/api/rawg/users/${username}/games?key=${RAWG_KEY}&statuses=${rawgStatus}&page_size=100`
+    // 1. Fetch user game list per status from RAWG sequentially to avoid rate-limiting (max 5 req/sec) and 522 timeouts
+    for (const { rawgStatus, appStatus } of statuses) {
+      const url = `/api/rawg/users/${username}/games?key=${RAWG_KEY}&statuses=${rawgStatus}&page_size=100`
 
-        const res = await fetch(url)
-        if (!res.ok) throw new Error(`RAWG API returned ${res.status}`)
-        const json = await res.json()
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`RAWG API returned ${res.status}`)
+      const json = await res.json()
 
-        if (json.results) {
-          json.results.forEach((game: any) => {
-            const existingIdx = rawgGames.findIndex(item => item.game.id === game.id)
-            if (existingIdx !== -1) {
-              if (appStatus === 'completed') rawgGames[existingIdx].appStatus = 'completed'
-            } else {
-              rawgGames.push({ game, appStatus })
-            }
-          })
-        }
-      })
-    )
+      if (json.results) {
+        json.results.forEach((game: any) => {
+          const existingIdx = rawgGames.findIndex(item => item.game.id === game.id)
+          if (existingIdx !== -1) {
+            if (appStatus === 'completed') rawgGames[existingIdx].appStatus = 'completed'
+          } else {
+            rawgGames.push({ game, appStatus })
+          }
+        })
+      }
+
+      // 50ms spacing between calls to be safe
+      await new Promise(resolve => setTimeout(resolve, 50))
+    }
 
     // 2. Map games instantly using existing cached covers or rawg backgrounds
     rawgGames.forEach(({ game, appStatus }) => {
@@ -128,6 +129,7 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
 
   } catch (error) {
     console.error('Failed to fetch from RAWG:', error)
+    throw error // Re-throw to prevent store.ts from overwriting cache with empty results
   }
 
   return Array.from(gamesMap.values())
