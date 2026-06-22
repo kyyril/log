@@ -114,7 +114,7 @@
       {/each}
     {:else if filteredItems.length === 0}
       <div class="col-span-full py-16 text-center text-text-secondary text-sm">
-        No manga match your criteria.
+        not found
       </div>
     {:else}
       {#each filteredItems as item, i (item.id)}

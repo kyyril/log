@@ -109,6 +109,12 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
       const year = game.released ? new Date(game.released).getFullYear() : 0
       const platforms = game.platforms ? game.platforms.map((p: any) => p.platform.name) : []
       const genres = game.genres ? game.genres.map((g: any) => g.name) : []
+      const tags = game.tags
+        ? game.tags
+            .filter((t: any) => t.language === 'eng')
+            .slice(0, 5)
+            .map((t: any) => t.name)
+        : []
       const cachedCover = coverCache[game.name] || game.background_image || ''
 
       gamesMap.set(game.id, {
@@ -119,10 +125,9 @@ export async function fetchGameList(username: string = USERNAME): Promise<Archiv
         status: appStatus,
         note: 'No thoughts recorded.',
         imageUrl: cachedCover,
-        hours: game.playtime || undefined,
-        metacritic: game.metacritic || undefined,
         platforms,
         genres,
+        tags,
         slug: game.slug
       })
     })

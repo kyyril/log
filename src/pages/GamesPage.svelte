@@ -15,11 +15,14 @@
 
   $: filteredItems = rawItems
     .filter((item) => {
-      const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesStatus = selectedStatus === 'all' || item.status === selectedStatus
-      return matchesSearch && matchesStatus
+      const matchesSearch = item.title
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesStatus =
+        selectedStatus === "all" || item.status === selectedStatus;
+      return matchesSearch && matchesStatus;
     })
-    .sort((a, b) => a.title.localeCompare(b.title))
+    .sort((a, b) => a.title.localeCompare(b.title));
 </script>
 
 <section class="py-10 md:py-24 px-3 sm:px-6 lg:px-8 max-w-6xl mx-auto">
@@ -102,7 +105,7 @@
       {/each}
     {:else if filteredItems.length === 0}
       <div class="col-span-full py-16 text-center text-text-secondary text-sm">
-        No games match your criteria.
+        not found
       </div>
     {:else}
       {#each filteredItems as item, i (item.id)}
