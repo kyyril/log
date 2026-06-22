@@ -6,6 +6,7 @@
   import GamesPage from "./pages/GamesPage.svelte";
   import Footer from "./components/Footer.svelte";
   import HeroSection from "./components/HeroSection.svelte";
+  import MusicPlayer from "./components/MusicPlayer.svelte";
   import { afterUpdate, onMount } from "svelte";
   import { fade } from "svelte/transition";
   import { loadData } from "./lib/store";
@@ -104,6 +105,7 @@
     {/key}
 
     <Footer {navigate} />
+    <MusicPlayer />
   </main>
 {/if}
 

@@ -51,7 +51,7 @@
         </div>
 
         <div class="mt-6 text-center">
-          <button type="button" on:click={() => navigate(section.href.slice(1))} class="px-4 py-2 text-foreground text-xs font-medium rounded hover:bg-foreground hover:text-white transition-colors">View More</button>
+          <button type="button" on:click={() => navigate(section.href.slice(1))} class="px-4 py-2 text-foreground text-xs font-medium underline hover:text-foreground/50 transition-colors">View More</button>
         </div>
       </div>
     {/each}
