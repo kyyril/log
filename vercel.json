@@ -14,7 +14,7 @@
       "destination": "https://www.backloggd.com/search/results.turbo_stream"
     },
     {
-      "source": "/((?!api/|assets/|logo.png|footerImage.png|section/).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
