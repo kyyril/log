@@ -21,11 +21,32 @@ const mapStatus = (malStatus: string): Status => {
   }
 }
 
-// Fetch anime from MAL API or Jikan fallback
+// Map a single MAL anime entry to an ArchiveItem
+function mapMalAnimeEntry(item: any): ArchiveItem {
+  const node = item.node
+  const listStatus = item.list_status || {}
+  
+  const year = node.start_season?.year || 
+    (node.start_date ? new Date(node.start_date).getFullYear() : 0)
+  
+  return {
+    id: `anime-${node.id}`,
+    title: node.title,
+    category: 'anime' as Category,
+    year,
+    status: mapStatus(listStatus.status),
+    rating: listStatus.score ? Math.round(listStatus.score / 2) : undefined, // scale 10 to 5 stars
+    score: listStatus.score || undefined, // scale 1-10
+    note: listStatus.comments || 'No thoughts recorded.',
+    imageUrl: node.main_picture?.large || node.main_picture?.medium || '',
+    hours: listStatus.num_episodes_watched ? Math.round(listStatus.num_episodes_watched * 0.4) : undefined // rough estimate: 24 mins per ep
+  }
+}
+
+// Fetch anime from MAL API or Jikan fallback (with pagination)
 export async function fetchAnimeList(username: string = USERNAME): Promise<ArchiveItem[]> {
   const fields = 'list_status{comments,score,num_episodes_watched},start_season,start_date'
   const limit = 100
-  const url = `/api/myanimelist/users/${username}/animelist?limit=${limit}&fields=${encodeURIComponent(fields)}`
 
   try {
     const headers: Record<string, string> = {}
@@ -33,43 +54,62 @@ export async function fetchAnimeList(username: string = USERNAME): Promise<Archi
       headers['X-MAL-CLIENT-ID'] = MAL_CLIENT_ID
     }
 
-    const response = await fetch(url, { headers })
-    if (!response.ok) {
-      throw new Error(`MAL API returned ${response.status}`)
-    }
-    const json = await response.json()
-    
-    return json.data.map((item: any) => {
-      const node = item.node
-      const listStatus = item.list_status || {}
-      
-      const year = node.start_season?.year || 
-        (node.start_date ? new Date(node.start_date).getFullYear() : 0)
-      
-      return {
-        id: `anime-${node.id}`,
-        title: node.title,
-        category: 'anime' as Category,
-        year,
-        status: mapStatus(listStatus.status),
-        rating: listStatus.score ? Math.round(listStatus.score / 2) : undefined, // scale 10 to 5 stars
-        score: listStatus.score || undefined, // scale 1-10
-        note: listStatus.comments || 'No thoughts recorded.',
-        imageUrl: node.main_picture?.large || node.main_picture?.medium || '',
-        hours: listStatus.num_episodes_watched ? Math.round(listStatus.num_episodes_watched * 0.4) : undefined // rough estimate: 24 mins per ep
+    const allItems: ArchiveItem[] = []
+    let nextUrl: string | null = `/api/myanimelist/users/${username}/animelist?limit=${limit}&fields=${encodeURIComponent(fields)}`
+
+    while (nextUrl) {
+      const response = await fetch(nextUrl, { headers })
+      if (!response.ok) {
+        throw new Error(`MAL API returned ${response.status}`)
       }
-    })
+      const json = await response.json()
+
+      const items = json.data.map(mapMalAnimeEntry)
+      allItems.push(...items)
+
+      // MAL API returns paging.next with the full URL for the next page
+      if (json.paging?.next) {
+        // The next URL from MAL is absolute (https://api.myanimelist.net/v2/...)
+        // Convert it to our proxy path
+        const nextAbsolute: string = json.paging.next
+        nextUrl = nextAbsolute.replace('https://api.myanimelist.net/v2', '/api/myanimelist')
+      } else {
+        nextUrl = null
+      }
+    }
+
+    return allItems
   } catch (error) {
     console.warn('MAL API failed, falling back to Jikan API:', error)
     return fetchAnimeListJikan(username)
   }
 }
 
-// Fetch manga from MAL API or Jikan fallback
+// Map a single MAL manga entry to an ArchiveItem
+function mapMalMangaEntry(item: any): ArchiveItem {
+  const node = item.node
+  const listStatus = item.list_status || {}
+  
+  const year = node.start_date ? new Date(node.start_date).getFullYear() : 0
+  
+  return {
+    id: `manga-${node.id}`,
+    title: node.title,
+    category: 'manga' as Category,
+    year,
+    status: mapStatus(listStatus.status),
+    rating: listStatus.score ? Math.round(listStatus.score / 2) : undefined,
+    score: listStatus.score || undefined,
+    note: listStatus.comments || 'No thoughts recorded.',
+    imageUrl: node.main_picture?.large || node.main_picture?.medium || '',
+    chapters: listStatus.num_chapters_read || undefined
+  }
+}
+
+// Fetch manga from MAL API or Jikan fallback (with pagination)
 export async function fetchMangaList(username: string = USERNAME): Promise<ArchiveItem[]> {
   const fields = 'list_status{comments,score,num_chapters_read},start_date'
   const limit = 100
-  const url = `/api/myanimelist/users/${username}/mangalist?limit=${limit}&fields=${encodeURIComponent(fields)}`
 
   try {
     const headers: Record<string, string> = {}
@@ -77,87 +117,111 @@ export async function fetchMangaList(username: string = USERNAME): Promise<Archi
       headers['X-MAL-CLIENT-ID'] = MAL_CLIENT_ID
     }
 
-    const response = await fetch(url, { headers })
-    if (!response.ok) {
-      throw new Error(`MAL API returned ${response.status}`)
-    }
-    const json = await response.json()
-    
-    return json.data.map((item: any) => {
-      const node = item.node
-      const listStatus = item.list_status || {}
-      
-      const year = node.start_date ? new Date(node.start_date).getFullYear() : 0
-      
-      return {
-        id: `manga-${node.id}`,
-        title: node.title,
-        category: 'manga' as Category,
-        year,
-        status: mapStatus(listStatus.status),
-        rating: listStatus.score ? Math.round(listStatus.score / 2) : undefined,
-        score: listStatus.score || undefined,
-        note: listStatus.comments || 'No thoughts recorded.',
-        imageUrl: node.main_picture?.large || node.main_picture?.medium || '',
-        chapters: listStatus.num_chapters_read || undefined
+    const allItems: ArchiveItem[] = []
+    let nextUrl: string | null = `/api/myanimelist/users/${username}/mangalist?limit=${limit}&fields=${encodeURIComponent(fields)}`
+
+    while (nextUrl) {
+      const response = await fetch(nextUrl, { headers })
+      if (!response.ok) {
+        throw new Error(`MAL API returned ${response.status}`)
       }
-    })
+      const json = await response.json()
+
+      const items = json.data.map(mapMalMangaEntry)
+      allItems.push(...items)
+
+      // MAL API returns paging.next with the full URL for the next page
+      if (json.paging?.next) {
+        const nextAbsolute: string = json.paging.next
+        nextUrl = nextAbsolute.replace('https://api.myanimelist.net/v2', '/api/myanimelist')
+      } else {
+        nextUrl = null
+      }
+    }
+
+    return allItems
   } catch (error) {
     console.warn('MAL API failed, falling back to Jikan API:', error)
     return fetchMangaListJikan(username)
   }
 }
 
-// Jikan fallback for Anime
+// Jikan fallback for Anime (with pagination)
 async function fetchAnimeListJikan(username: string): Promise<ArchiveItem[]> {
-  const url = `https://api.jikan.moe/v4/users/${username}/animelist`
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Jikan API returned ${response.status}`)
-  }
-  const json = await response.json()
-  return json.data.map((item: any) => {
-    const anime = item.anime
-    const year = anime.year || (anime.aired?.from ? new Date(anime.aired.from).getFullYear() : 0)
-    
-    return {
-      id: `anime-${anime.mal_id}`,
-      title: anime.title,
-      category: 'anime',
-      year,
-      status: mapStatus(item.status),
-      rating: item.score ? Math.round(item.score / 2) : undefined,
-      score: item.score || undefined,
-      note: item.comments || 'No thoughts recorded.',
-      imageUrl: anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || '',
-      hours: item.progress ? Math.round(item.progress * 0.4) : undefined
+  const allItems: ArchiveItem[] = []
+  let page = 1
+  let hasNextPage = true
+
+  while (hasNextPage) {
+    const url = `https://api.jikan.moe/v4/users/${username}/animelist?page=${page}`
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`Jikan API returned ${response.status}`)
     }
-  })
+    const json = await response.json()
+    
+    const items = json.data.map((item: any) => {
+      const anime = item.anime
+      const year = anime.year || (anime.aired?.from ? new Date(anime.aired.from).getFullYear() : 0)
+      
+      return {
+        id: `anime-${anime.mal_id}`,
+        title: anime.title,
+        category: 'anime',
+        year,
+        status: mapStatus(item.status),
+        rating: item.score ? Math.round(item.score / 2) : undefined,
+        score: item.score || undefined,
+        note: item.comments || 'No thoughts recorded.',
+        imageUrl: anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || '',
+        hours: item.progress ? Math.round(item.progress * 0.4) : undefined
+      }
+    })
+    
+    allItems.push(...items)
+    hasNextPage = json.pagination?.has_next_page ?? false
+    page++
+  }
+
+  return allItems
 }
 
-// Jikan fallback for Manga
+// Jikan fallback for Manga (with pagination)
 async function fetchMangaListJikan(username: string): Promise<ArchiveItem[]> {
-  const url = `https://api.jikan.moe/v4/users/${username}/mangalist`
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Jikan API returned ${response.status}`)
-  }
-  const json = await response.json()
-  return json.data.map((item: any) => {
-    const manga = item.manga
-    const year = manga.published?.from ? new Date(manga.published.from).getFullYear() : 0
-    
-    return {
-      id: `manga-${manga.mal_id}`,
-      title: manga.title,
-      category: 'manga',
-      year,
-      status: mapStatus(item.status),
-      rating: item.score ? Math.round(item.score / 2) : undefined,
-      score: item.score || undefined,
-      note: item.comments || 'No thoughts recorded.',
-      imageUrl: manga.images?.jpg?.large_image_url || manga.images?.jpg?.image_url || '',
-      chapters: item.progress || undefined
+  const allItems: ArchiveItem[] = []
+  let page = 1
+  let hasNextPage = true
+
+  while (hasNextPage) {
+    const url = `https://api.jikan.moe/v4/users/${username}/mangalist?page=${page}`
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`Jikan API returned ${response.status}`)
     }
-  })
+    const json = await response.json()
+    
+    const items = json.data.map((item: any) => {
+      const manga = item.manga
+      const year = manga.published?.from ? new Date(manga.published.from).getFullYear() : 0
+      
+      return {
+        id: `manga-${manga.mal_id}`,
+        title: manga.title,
+        category: 'manga',
+        year,
+        status: mapStatus(item.status),
+        rating: item.score ? Math.round(item.score / 2) : undefined,
+        score: item.score || undefined,
+        note: item.comments || 'No thoughts recorded.',
+        imageUrl: manga.images?.jpg?.large_image_url || manga.images?.jpg?.image_url || '',
+        chapters: item.progress || undefined
+      }
+    })
+    
+    allItems.push(...items)
+    hasNextPage = json.pagination?.has_next_page ?? false
+    page++
+  }
+
+  return allItems
 }
