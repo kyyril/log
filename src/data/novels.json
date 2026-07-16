@@ -1,0 +1,54 @@
+[
+  {
+    "id": "novel-flowers-for-algernon",
+    "title": "Flowers for Algernon",
+    "category": "novel",
+    "year": 1966,
+    "status": "completed",
+    "score": 9,
+    "note": "Told through Charlie Gordon's progress reports — his rise and heartbreaking fall in intelligence is a modern tragedy that stays with you long after the last page. A masterpiece of science fiction.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/en/thumb/e/ea/FlowersForAlgernon.jpg/250px-FlowersForAlgernon.jpg",
+    "author": "Daniel Keyes",
+    "volumes": 311,
+    "link": "https://en.wikipedia.org/wiki/Flowers_for_Algernon"
+  },
+  {
+    "id": "novel-the-old-man-and-the-sea",
+    "title": "The Old Man and the Sea",
+    "category": "novel",
+    "year": 1952,
+    "status": "completed",
+    "score": 9,
+    "note": "Hemingway's spare, beautiful tale of Santiago — an aging fisherman's lonely struggle against the marlin and the sea. A quiet meditation on endurance, pride, and the dignity of never giving up.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/The_Old_Man_and_the_Sea_%281952%29_front_cover%2C_first_edition.jpg/250px-The_Old_Man_and_the_Sea_%281952%29_front_cover%2C_first_edition.jpg",
+    "author": "Ernest Hemingway",
+    "volumes": 127,
+    "link": "https://en.wikipedia.org/wiki/The_Old_Man_and_the_Sea"
+  },
+  {
+    "id": "novel-kaze-no-matasaburo",
+    "title": "Kaze no Matasaburō (Matasaburō of the Wind)",
+    "category": "novel",
+    "year": 1934,
+    "status": "completed",
+    "score": 8,
+    "note": "A gentle, dreamlike children's tale by Kenji Miyazawa about a boy the village children suspect is the wind spirit himself. Whimsical and quietly magical — a beloved piece of Japanese literature.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/en/thumb/0/01/Kaze_no_Matasaburo_1940_poster.jpg/250px-Kaze_no_Matasaburo_1940_poster.jpg",
+    "author": "Kenji Miyazawa",
+    "volumes": 1,
+    "link": "https://en.wikipedia.org/wiki/Kaze_no_Matasaburo"
+  },
+  {
+    "id": "novel-the-happy-prince-and-other-tales",
+    "title": "The Happy Prince and Other Tales",
+    "category": "novel",
+    "year": 1888,
+    "status": "completed",
+    "score": 9,
+    "note": "Oscar Wilde's beloved collection of five fairy tales — The Happy Prince, The Nightingale and the Rose, The Selfish Giant, The Devoted Friend, and The Remarkable Rocket. Tender, witty, and quietly melancholic, each carries a moral wrapped in luminous prose.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Plate_1_of_The_Happy_Prince_and_Other_Tales_%281888%29.png/1280px-Plate_1_of_The_Happy_Prince_and_Other_Tales_%281888%29.png",
+    "author": "Oscar Wilde",
+    "volumes": 117,
+    "link": "https://en.wikipedia.org/wiki/The_Happy_Prince_and_Other_Tales"
+  }
+]

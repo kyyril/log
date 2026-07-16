@@ -1,4 +1,4 @@
-export type Category = 'anime' | 'manga' | 'games'
+export type Category = 'anime' | 'manga' | 'games' | 'novel'
 export type Status = 'completed' | 'in-progress' | 'dropped' | 'planned'
 
 export interface ArchiveItem {
@@ -17,4 +17,7 @@ export interface ArchiveItem {
   genres?: string[]
   tags?: string[]
   slug?: string
+  author?: string
+  volumes?: number
+  link?: string
 }

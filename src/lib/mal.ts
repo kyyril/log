@@ -102,13 +102,14 @@ function mapMalMangaEntry(item: any): ArchiveItem {
     score: listStatus.score || undefined,
     note: listStatus.comments || 'No thoughts recorded.',
     imageUrl: node.main_picture?.large || node.main_picture?.medium || '',
-    chapters: listStatus.num_chapters_read || undefined
+    chapters: listStatus.num_chapters_read || undefined,
+    author: node.authors?.map((a: any) => `${a.node.first_name} ${a.node.last_name}`.trim()).filter(Boolean).join(', ') || undefined
   }
 }
 
 // Fetch manga from MAL API or Jikan fallback (with pagination)
 export async function fetchMangaList(username: string = USERNAME): Promise<ArchiveItem[]> {
-  const fields = 'list_status{comments,score,num_chapters_read},start_date'
+  const fields = 'list_status{comments,score,num_chapters_read},start_date,authors{first_name,last_name}'
   const limit = 100
 
   try {

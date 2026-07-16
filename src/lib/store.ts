@@ -2,6 +2,7 @@ import { writable } from 'svelte/store'
 import type { ArchiveItem } from '../types'
 import { fetchAnimeList, fetchMangaList } from './mal'
 import { fetchGameList } from './rawg'
+import novelsData from '../data/novels.json'
 
 export const itemsStore = writable<ArchiveItem[]>([])
 export const isLoadingStore = writable<boolean>(false)
@@ -12,6 +13,9 @@ const CACHE_KEY_MANGA  = 'mal_cache_manga'
 const CACHE_KEY_GAMES  = 'rawg_cache_games'
 const CACHE_KEY_TIME   = 'mal_cache_timestamp'
 const CACHE_DURATION   = 60 * 60 * 1000 // 1 hour
+
+// Static novel list loaded from src/data/novels.json
+const novelItems: ArchiveItem[] = novelsData as ArchiveItem[]
 
 export async function loadData() {
   let cachedAnime: ArchiveItem[] = []
@@ -44,7 +48,7 @@ export async function loadData() {
 
       // Instantly populate store with whatever we have in cache
       if (cachedAnime.length || cachedManga.length || cachedGames.length) {
-        itemsStore.set([...cachedGames, ...cachedAnime, ...cachedManga])
+        itemsStore.set([...cachedGames, ...cachedAnime, ...cachedManga, ...novelItems])
       }
     } catch (e) {
       console.warn('Failed to read local cache', e)
@@ -77,7 +81,7 @@ export async function loadData() {
   if (mangaResult.status === 'rejected') console.warn('Manga fetch failed, keeping cache:', mangaResult.reason)
   if (gamesResult.status === 'rejected') console.warn('Games fetch failed, keeping cache:', gamesResult.reason)
 
-  itemsStore.set([...gameList, ...animeList, ...mangaList])
+  itemsStore.set([...gameList, ...animeList, ...mangaList, ...novelItems])
 
   if (typeof window !== 'undefined') {
     // Only persist to localStorage if that specific source succeeded

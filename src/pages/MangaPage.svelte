@@ -7,11 +7,14 @@
 
   export let navigate: (page: string) => void = () => {};
 
-  const title = "MANGA";
   let searchQuery = "";
   let selectedStatus: Status | "all" = "all";
+  let selectedType: "all" | "manga" | "novel" = "all";
 
-  $: rawItems = $itemsStore.filter((item) => item.category === "manga");
+  $: rawItems = $itemsStore.filter((item) => {
+    if (selectedType === "all") return item.category === "manga" || item.category === "novel";
+    return item.category === selectedType;
+  });
 
   $: filteredItems = rawItems
     .filter((item) => {
@@ -39,11 +42,11 @@
     <div
       class="absolute inset-0 flex pointer-events-none justify-start pl-4 items-end pb-4"
     >
-      <span
-        class="text-5xl md:text-7xl font-black uppercase tracking-wider text-transparent"
-        style="-webkit-text-stroke: 2px black; paint-order: stroke fill;"
-        >{title}</span
-      >
+      <span class="flex items-end gap-1 -rotate-2">
+        <span class="text-4xl md:text-6xl font-black uppercase tracking-tight text-transparent" style="-webkit-text-stroke: 2px black; paint-order: stroke fill;">Manga</span>
+        <span class="text-5xl md:text-7xl font-black text-foreground leading-none translate-y-1 select-none" style="text-shadow: 3px 3px 0 #cbd5e1;">/</span>
+        <span class="text-4xl md:text-6xl font-black uppercase tracking-tight text-foreground" style="background: linear-gradient(180deg, #111 0%, #444 100%); -webkit-background-clip: text; background-clip: text; color: transparent; transform: skewX(-8deg); display: inline-block;">Novel</span>
+      </span>
     </div>
   </div>
 
@@ -87,6 +90,16 @@
           />
         </svg>
       </div>
+
+      <!-- Type Dropdown (Manga / Novel) -->
+      <select
+        bind:value={selectedType}
+        class="px-2.5 py-2 rounded-lg bg-gray-50/50 text-xs font-semibold text-text-secondary uppercase focus:outline-none focus:bg-white transition-all cursor-pointer"
+      >
+        <option value="all">Manga/Novel</option>
+        <option value="manga">Manga</option>
+        <option value="novel">Novel</option>
+      </select>
 
       <!-- Status Dropdown (Select) -->
       <select

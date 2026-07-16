@@ -6,12 +6,12 @@
   export let navigate: (page: string) => void = () => {}
 
   $: anime = $itemsStore.filter((item) => item.category === 'anime').slice(0, 8)
-  $: manga = $itemsStore.filter((item) => item.category === 'manga').slice(0, 8)
+  $: manga = $itemsStore.filter((item) => item.category === 'manga' || item.category === 'novel').slice(0, 8)
   $: games = $itemsStore.filter((item) => item.category === 'games').slice(0, 8)
 
   $: sections = [
     { title: 'ANIME', image: '/section/animeSection.png', items: anime, href: '/anime' },
-    { title: 'MANGA', image: '/section/mangaSection.png', items: manga, href: '/manga' },
+    { title: 'MANGA/NOVEL', image: '/section/mangaSection.png', items: manga, href: '/manga', special: true },
     { title: 'GAMES', image: '/section/gameSection.png', items: games, href: '/games' },
   ]
 </script>
@@ -25,12 +25,21 @@
           <img
             src={section.image}
             alt={section.title}
-            class="absolute inset-0 w-full h-full object-contain {section.title === 'ANIME' ? 'object-right' : section.title === 'MANGA' ? 'object-left' : 'object-right'}"
+            class="absolute inset-0 w-full h-full object-contain {section.title === 'ANIME' ? 'object-right' : section.special ? 'object-left' : 'object-right'}"
           />
-          <div class="absolute inset-0 flex pointer-events-none {section.title === 'ANIME' ? 'justify-end pr-8 pt-0 items-start' : section.title === 'MANGA' ? 'justify-start pl-4 items-end pb-4' : 'justify-end pr-8 items-center'}">
-            <span class="text-5xl md:text-7xl font-black uppercase tracking-wider text-transparent" style="-webkit-text-stroke: 2px black; paint-order: stroke fill;">
-              {section.title}
-            </span>
+          <div class="absolute inset-0 flex pointer-events-none {section.title === 'ANIME' ? 'justify-end pr-8 pt-0 items-start' : section.special ? 'justify-start pl-4 items-end pb-4' : 'justify-end pr-8 items-center'}">
+            {#if section.special}
+              <!-- Unique MANGA / NOVEL title -->
+              <span class="flex items-end gap-1 -rotate-2">
+                <span class="text-4xl md:text-6xl font-black uppercase tracking-tight text-transparent" style="-webkit-text-stroke: 2px black; paint-order: stroke fill;">Manga</span>
+                <span class="text-5xl md:text-7xl font-black text-foreground leading-none translate-y-1 select-none" style="text-shadow: 3px 3px 0 #cbd5e1;">/</span>
+                <span class="text-4xl md:text-6xl font-black uppercase tracking-tight text-foreground" style="background: linear-gradient(180deg, #111 0%, #444 100%); -webkit-background-clip: text; background-clip: text; color: transparent; transform: skewX(-8deg); display: inline-block;">Novel</span>
+              </span>
+            {:else}
+              <span class="text-5xl md:text-7xl font-black uppercase tracking-wider text-transparent" style="-webkit-text-stroke: 2px black; paint-order: stroke fill;">
+                {section.title}
+              </span>
+            {/if}
           </div>
         </div>
 

@@ -21,13 +21,14 @@
   };
 
   const getMalUrl = () => {
-    if (item.category === "games") return null;
+    if (item.category === "games" || item.category === "novel") return null;
     const parts = item.id.split("-");
     if (parts.length < 2) return null;
     const malId = parts[1];
     return `https://myanimelist.net/${item.category}/${malId}`;
   };
   const malUrl = getMalUrl();
+  const externalUrl = item.category === "novel" ? (item.link || null) : malUrl;
 
   onMount(async () => {
     // If it's a game and it doesn't have a Backloggd cover yet (indicated by rawg.io background in imageUrl)
@@ -108,6 +109,12 @@
       >
         {item.title}
       </h3>
+
+      {#if item.author}
+        <div class="text-[9px] text-text-secondary/70 truncate mb-1">
+          {item.author}
+        </div>
+      {/if}
 
       <div class="flex items-center justify-between gap-1">
         <div
@@ -193,6 +200,54 @@
           {/each}
         </div>
       {/if}
+    </div>
+  </a>
+{:else if item.category === "novel" && (item.link || item.author)}
+  <!-- Novel Card -->
+  <a
+    href={item.link}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="block text-left w-full group"
+  >
+    <div
+      class="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 transition duration-300 relative"
+    >
+      <img
+        src={poster}
+        alt={item.title}
+        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+        loading="lazy"
+        on:error={handleImgError}
+      />
+      <div
+        class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-white text-[9px] font-bold px-2 py-0.5 rounded tracking-wider"
+      >
+        NOVEL ↗
+      </div>
+    </div>
+
+    <div class="px-1.5 py-2 sm:p-3">
+      <h3
+        class="text-[11px] sm:text-sm font-bold text-foreground truncate mb-1 transition-colors group-hover:text-foreground/80"
+      >
+        {item.title}
+      </h3>
+
+      <div class="text-[9px] text-text-secondary/70 truncate mb-1">
+        {item.author}{item.volumes ? ` • ${item.volumes}p` : ""}
+      </div>
+
+      <div class="flex items-center justify-between gap-1">
+        <span class="text-[10px] text-text-secondary font-mono">{item.year}</span>
+        {#if item.score}
+          <div
+            class="text-[10px] font-bold px-1.5 py-0.5 rounded font-mono flex-shrink-0"
+          >
+            {item.score}/10
+          </div>
+        {/if}
+      </div>
     </div>
   </a>
 {:else}
