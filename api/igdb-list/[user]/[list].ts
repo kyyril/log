@@ -21,8 +21,13 @@ type Res = {
 export default async function handler(req: Req, res: Res) {
   const user = encodeURIComponent(String(req.query.user || 'kyyril1'))
   const list = encodeURIComponent(String(req.query.list || 'played'))
-  const page = req.query.page ? `?page=${encodeURIComponent(String(req.query.page))}` : ''
-  const target = `https://www.igdb.com/users/${user}/lists/${list}${page}`
+  const params = [
+    req.query.page ? `page=${encodeURIComponent(String(req.query.page))}` : '',
+    req.query.cb ? `cb=${encodeURIComponent(String(req.query.cb))}` : '',
+  ]
+    .filter(Boolean)
+    .join('&')
+  const target = `https://www.igdb.com/users/${user}/lists/${list}${params ? `?${params}` : ''}`
 
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), 60_000)
