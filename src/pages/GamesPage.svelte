@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { itemsStore, loadingGamesStore } from "../lib/store";
+  import { itemsStore, loadingGamesStore, errorStore } from "../lib/store";
   import ArchiveCard from "../components/ArchiveCard.svelte";
   import ArchiveCardSkeleton from "../components/ArchiveCardSkeleton.svelte";
   import { reveal } from "../lib/reveal";

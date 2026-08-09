@@ -2,7 +2,7 @@ import { writable } from 'svelte/store'
 import type { Writable } from 'svelte/store'
 import type { ArchiveItem } from '../types'
 import { fetchAnimeList, fetchMangaList } from './mal'
-import { fetchGameList } from './rawg'
+import { fetchGameList } from './igdb'
 import novelsData from '../data/novels.json'
 
 export const itemsStore = writable<ArchiveItem[]>([])
@@ -17,7 +17,7 @@ const FETCH_TIMEOUT = 20 * 1000 // 20s per source, then fall back to cache
 const CACHE_KEYS = {
   anime: 'mal_cache_anime',
   manga: 'mal_cache_manga',
-  games: 'rawg_cache_games',
+  games: 'igdb_cache_games',
 } as const
 
 type SourceKey = keyof typeof CACHE_KEYS
@@ -102,8 +102,7 @@ async function loadSource(
 }
 
 const hasScore = (cached: ArchiveItem[]) => cached.some(i => 'score' in i)
-const isFreshGames = (cached: ArchiveItem[]) =>
-  !cached.some(i => i.id.includes('-0-') || ['10', '11', '12'].includes(i.id))
+const isFreshGames = (cached: ArchiveItem[]) => cached.every(i => i.imageUrl && i.slug)
 
 // Each source loads independently and updates the store as soon as it's done.
 // A hanging or failing games fetch only affects the games section.

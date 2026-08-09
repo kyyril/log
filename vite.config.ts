@@ -10,7 +10,7 @@ export default defineConfig({
     },
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.svelte'],
   },
-  envPrefix: ['VITE_', 'MAL_', 'RAWG_'],
+  envPrefix: ['VITE_', 'MAL_'],
   server: {
     hmr: {
       overlay: false,
@@ -21,16 +21,14 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/myanimelist/, ''),
       },
-      '/api/rawg': {
-        target: 'https://api.rawg.io/api',
+      '/api/igdb-list': {
+        target: 'https://r.jina.ai',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/rawg/, ''),
+        rewrite: (path) => path.replace(/^\/api\/igdb-list\/([^/]+)\/([^/]+)/, '/https://www.igdb.com/users/$1/lists/$2'),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => proxyReq.setHeader('X-Return-Format', 'html'))
+        },
       },
-      '/api/backloggd': {
-        target: 'https://www.backloggd.com/search/results.turbo_stream',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/backloggd/, ''),
-      }
     }
   },
 })

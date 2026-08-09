@@ -25,7 +25,7 @@
         <h3 class="font-bold text-foreground mb-4">Resources</h3>
         <ul class="text-sm text-text-secondary space-y-2">
           <li><a href="https://myanimelist.net" target="_blank" rel="noopener noreferrer" class="hover:text-foreground transition-colors">https://myanimelist.net</a></li>
-          <li><a href="https://rawg.io" target="_blank" rel="noopener noreferrer" class="hover:text-foreground transition-colors">https://rawg.io</a></li>
+          <li><a href="https://www.igdb.com" target="_blank" rel="noopener noreferrer" class="hover:text-foreground transition-colors">https://www.igdb.com</a></li>
         </ul>
       </div>
 
