@@ -1,12 +1,13 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
       "source": "/api/myanimelist/:path*",
       "destination": "https://api.myanimelist.net/v2/:path*"
+    },
+    {
+      "source": "/:path((?!api/).*)",
+      "destination": "/index.html"
     }
-  ],
-  "fallback": {
-    "source": "/(.*)",
-    "destination": "/index.html"
-  }
+  ]
 }
