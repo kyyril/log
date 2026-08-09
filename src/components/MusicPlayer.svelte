@@ -1,11 +1,20 @@
 <script lang="ts">
   let playing = false
   let audio: HTMLAudioElement | null = null
+  let context: AudioContext | null = null
+  let gainNode: GainNode | null = null
+  const BOOST = 2.0
 
   const toggle = () => {
     if (!audio) {
-      audio = new Audio('/music/kensuke ushio - lvs(var).mp3')
+      context = new AudioContext()
+      audio = new Audio('/music/heal.mp3')
       audio.loop = true
+      gainNode = context.createGain()
+      gainNode.gain.value = BOOST
+      const source = context.createMediaElementSource(audio)
+      source.connect(gainNode)
+      gainNode.connect(context.destination)
       audio.play()
       playing = true
       return
