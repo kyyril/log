@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { itemsStore, isLoadingStore } from '../lib/store'
+  import { itemsStore, loadingAnimeStore, loadingMangaStore, loadingGamesStore } from '../lib/store'
   import ArchiveCard from './ArchiveCard.svelte'
   import ArchiveCardSkeleton from './ArchiveCardSkeleton.svelte'
   import { reveal } from '../lib/reveal'
@@ -10,9 +10,9 @@
   $: games = $itemsStore.filter((item) => item.category === 'games').slice(0, 8)
 
   $: sections = [
-    { title: 'ANIME', image: '/section/animeSection.png', items: anime, href: '/anime' },
-    { title: 'MANGA/NOVEL', image: '/section/mangaSection.png', items: manga, href: '/manga', special: true },
-    { title: 'GAMES', image: '/section/gameSection.png', items: games, href: '/games' },
+    { title: 'ANIME', image: '/section/animeSection.png', items: anime, href: '/anime', loading: $loadingAnimeStore },
+    { title: 'MANGA/NOVEL', image: '/section/mangaSection.png', items: manga, href: '/manga', special: true, loading: $loadingMangaStore },
+    { title: 'GAMES', image: '/section/gameSection.png', items: games, href: '/games', loading: $loadingGamesStore },
   ]
 </script>
 
@@ -44,7 +44,7 @@
         </div>
 
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {#if $isLoadingStore && section.items.length === 0}
+          {#if section.loading && section.items.length === 0}
             {#each Array(8) as _, j}
               <div class={j >= 4 ? 'hidden lg:block' : ''}>
                 <ArchiveCardSkeleton />

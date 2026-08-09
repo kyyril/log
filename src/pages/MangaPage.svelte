@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { itemsStore, isLoadingStore } from "../lib/store";
+  import { itemsStore, loadingMangaStore } from "../lib/store";
   import ArchiveCard from "../components/ArchiveCard.svelte";
   import ArchiveCardSkeleton from "../components/ArchiveCardSkeleton.svelte";
   import { reveal } from "../lib/reveal";
@@ -121,7 +121,7 @@
   </div>
 
   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-    {#if $isLoadingStore && rawItems.length === 0}
+    {#if $loadingMangaStore && rawItems.length === 0}
       {#each Array(8) as _}
         <ArchiveCardSkeleton />
       {/each}

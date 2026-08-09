@@ -1,102 +1,114 @@
 import { writable } from 'svelte/store'
+import type { Writable } from 'svelte/store'
 import type { ArchiveItem } from '../types'
 import { fetchAnimeList, fetchMangaList } from './mal'
 import { fetchGameList } from './rawg'
 import novelsData from '../data/novels.json'
 
 export const itemsStore = writable<ArchiveItem[]>([])
-export const isLoadingStore = writable<boolean>(false)
+export const loadingAnimeStore = writable(false)
+export const loadingMangaStore = writable(false)
+export const loadingGamesStore = writable(false)
 export const errorStore = writable<string | null>(null)
 
-const CACHE_KEY_ANIME  = 'mal_cache_anime'
-const CACHE_KEY_MANGA  = 'mal_cache_manga'
-const CACHE_KEY_GAMES  = 'rawg_cache_games'
-const CACHE_KEY_TIME   = 'mal_cache_timestamp'
-const CACHE_DURATION   = 60 * 60 * 1000 // 1 hour
+const CACHE_DURATION = 60 * 60 * 1000 // 1 hour
+const FETCH_TIMEOUT = 20 * 1000 // 20s per source, then fall back to cache
+
+const CACHE_KEYS = {
+  anime: 'mal_cache_anime',
+  manga: 'mal_cache_manga',
+  games: 'rawg_cache_games',
+} as const
+
+type SourceKey = keyof typeof CACHE_KEYS
 
 // Static novel list loaded from src/data/novels.json
 const novelItems: ArchiveItem[] = novelsData as ArchiveItem[]
 
-export async function loadData() {
-  let cachedAnime: ArchiveItem[] = []
-  let cachedManga: ArchiveItem[] = []
-  let cachedGames: ArchiveItem[] = []
-  let cacheTime = 0
+// Holds the latest data of every source independently — a slow/failed fetch
+// of one source never blocks or wipes the others.
+const sourceState: Record<SourceKey, ArchiveItem[]> = { anime: [], manga: [], games: [] }
 
-  if (typeof window !== 'undefined') {
-    try {
-      const animeRaw = localStorage.getItem(CACHE_KEY_ANIME)
-      const mangaRaw = localStorage.getItem(CACHE_KEY_MANGA)
-      const gamesRaw = localStorage.getItem(CACHE_KEY_GAMES)
-      const timeRaw  = localStorage.getItem(CACHE_KEY_TIME)
+function publish() {
+  itemsStore.set([...sourceState.games, ...sourceState.anime, ...sourceState.manga, ...novelItems])
+}
 
-      if (animeRaw && mangaRaw && timeRaw) {
-        cachedAnime = JSON.parse(animeRaw)
-        cachedManga = JSON.parse(mangaRaw)
-        cacheTime   = parseInt(timeRaw, 10)
+function readCache(key: string): ArchiveItem[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = localStorage.getItem(key)
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
 
-        // Force refresh if cached data predates the score field
-        const hasScore = cachedAnime.some(i => 'score' in i) || cachedManga.some(i => 'score' in i)
-        if (!hasScore) cacheTime = 0
-      }
+function writeCache(key: string, items: ArchiveItem[]) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(key, JSON.stringify(items))
+  } catch {
+    // storage full/unavailable — skip silently
+  }
+}
 
-      if (gamesRaw) {
-        cachedGames = JSON.parse(gamesRaw)
-        const hasOldGames = cachedGames.some(i => i.id.includes('-0-') || ['10', '11', '12'].includes(i.id))
-        if (hasOldGames) cacheTime = 0
-      }
+function fetchWithTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms)
+    promise.then(
+      (value) => { clearTimeout(timer); resolve(value) },
+      (error) => { clearTimeout(timer); reject(error) },
+    )
+  })
+}
 
-      // Instantly populate store with whatever we have in cache
-      if (cachedAnime.length || cachedManga.length || cachedGames.length) {
-        itemsStore.set([...cachedGames, ...cachedAnime, ...cachedManga, ...novelItems])
-      }
-    } catch (e) {
-      console.warn('Failed to read local cache', e)
-    }
+async function loadSource(
+  key: SourceKey,
+  fetcher: () => Promise<ArchiveItem[]>,
+  loadingStore: Writable<boolean>,
+  isCacheFresh: (cached: ArchiveItem[]) => boolean,
+) {
+  const cacheKey = CACHE_KEYS[key]
+  const cached = readCache(cacheKey)
+
+  // Show whatever we already have immediately — never a blank section
+  if (cached.length) {
+    sourceState[key] = cached
+    publish()
   }
 
+  // Per-source cache validity: a stale/old games cache must NOT force
+  // anime/manga to refetch, and vice versa.
   const now = Date.now()
-  const isCacheValid = cacheTime && (now - cacheTime < CACHE_DURATION)
+  const timeKey = `${cacheKey}_timestamp`
+  const cacheTime = typeof window !== 'undefined' ? parseInt(localStorage.getItem(timeKey) || '0', 10) : 0
+  const isCacheValid = cacheTime > 0 && now - cacheTime < CACHE_DURATION && isCacheFresh(cached)
 
-  if (isCacheValid && cachedAnime.length > 0 && cachedManga.length > 0 && cachedGames.length > 0) {
-    return
+  if (isCacheValid) return
+
+  loadingStore.set(true)
+  try {
+    const items = await fetchWithTimeout(fetcher(), FETCH_TIMEOUT)
+    sourceState[key] = items
+    publish()
+    writeCache(cacheKey, items)
+    if (typeof window !== 'undefined') localStorage.setItem(timeKey, now.toString())
+  } catch (e) {
+    console.warn(`${key} fetch failed, keeping cache:`, e)
+    if (!cached.length) errorStore.set(`Failed to load ${key} data`)
+  } finally {
+    loadingStore.set(false)
   }
+}
 
-  isLoadingStore.set(true)
-  errorStore.set(null)
+const hasScore = (cached: ArchiveItem[]) => cached.some(i => 'score' in i)
+const isFreshGames = (cached: ArchiveItem[]) =>
+  !cached.some(i => i.id.includes('-0-') || ['10', '11', '12'].includes(i.id))
 
-  // Fetch each source independently using allSettled — one failure won't block or wipe the others
-  const [animeResult, mangaResult, gamesResult] = await Promise.allSettled([
-    cachedAnime.length && isCacheValid ? Promise.resolve(cachedAnime) : fetchAnimeList(),
-    cachedManga.length && isCacheValid ? Promise.resolve(cachedManga) : fetchMangaList(),
-    cachedGames.length && isCacheValid ? Promise.resolve(cachedGames) : fetchGameList(),
-  ])
-
-  // Fall back to existing cache if a source failed — never show empty
-  const animeList = animeResult.status === 'fulfilled' ? animeResult.value : cachedAnime
-  const mangaList = mangaResult.status === 'fulfilled' ? mangaResult.value : cachedManga
-  const gameList  = gamesResult.status === 'fulfilled' ? gamesResult.value : cachedGames
-
-  if (animeResult.status === 'rejected') console.warn('Anime fetch failed, keeping cache:', animeResult.reason)
-  if (mangaResult.status === 'rejected') console.warn('Manga fetch failed, keeping cache:', mangaResult.reason)
-  if (gamesResult.status === 'rejected') console.warn('Games fetch failed, keeping cache:', gamesResult.reason)
-
-  itemsStore.set([...gameList, ...animeList, ...mangaList, ...novelItems])
-
-  if (typeof window !== 'undefined') {
-    // Only persist to localStorage if that specific source succeeded
-    if (animeResult.status === 'fulfilled') localStorage.setItem(CACHE_KEY_ANIME, JSON.stringify(animeList))
-    if (mangaResult.status === 'fulfilled') localStorage.setItem(CACHE_KEY_MANGA, JSON.stringify(mangaList))
-    if (gamesResult.status === 'fulfilled') localStorage.setItem(CACHE_KEY_GAMES, JSON.stringify(gameList))
-    // Only update timestamp when ALL sources succeed
-    if (animeResult.status === 'fulfilled' && mangaResult.status === 'fulfilled' && gamesResult.status === 'fulfilled') {
-      localStorage.setItem(CACHE_KEY_TIME, now.toString())
-    }
-  }
-
-  if (animeResult.status === 'rejected' && mangaResult.status === 'rejected' && gamesResult.status === 'rejected' && !cachedAnime.length && !cachedManga.length) {
-    errorStore.set('Failed to load data')
-  }
-
-  isLoadingStore.set(false)
+// Each source loads independently and updates the store as soon as it's done.
+// A hanging or failing games fetch only affects the games section.
+export function loadData() {
+  loadSource('anime', fetchAnimeList, loadingAnimeStore, hasScore)
+  loadSource('manga', fetchMangaList, loadingMangaStore, hasScore)
+  loadSource('games', fetchGameList, loadingGamesStore, isFreshGames)
 }
