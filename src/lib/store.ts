@@ -11,7 +11,7 @@ export const loadingMangaStore = writable(false)
 export const loadingGamesStore = writable(false)
 export const errorStore = writable<string | null>(null)
 
-const CACHE_DURATION = 60 * 60 * 1000 // 1 hour
+const CACHE_DURATION = 10 * 60 * 1000 // 10 min, so IGDB/MAL updates appear quickly
 const FETCH_TIMEOUT = 20 * 1000 // 20s per source, then fall back to cache
 
 const CACHE_KEYS = {

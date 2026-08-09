@@ -103,6 +103,12 @@
       {#each Array(8) as _}
         <ArchiveCardSkeleton />
       {/each}
+    {:else if rawItems.length === 0}
+      <div class="col-span-full py-16 text-center text-text-secondary text-sm">
+        {$errorStore && $errorStore.includes("games")
+          ? $errorStore
+          : "not found"}
+      </div>
     {:else if filteredItems.length === 0}
       <div class="col-span-full py-16 text-center text-text-secondary text-sm">
         not found
