@@ -3,10 +3,10 @@
     {
       "source": "/api/myanimelist/:path*",
       "destination": "https://api.myanimelist.net/v2/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
-  ]
+  ],
+  "fallback": {
+    "source": "/(.*)",
+    "destination": "/index.html"
+  }
 }
