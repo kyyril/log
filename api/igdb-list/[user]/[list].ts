@@ -34,7 +34,9 @@ export default async function handler(req: Req, res: Res) {
 
   try {
     const upstream = await fetch(`${JINA_BASE}/${target}`, {
-      headers: { 'X-Return-Format': 'html' },
+      // X-No-Cache: r.jina.ai ignores query-string cache busters, so it would
+      // otherwise keep serving the same stale snapshot of the IGDB page.
+      headers: { 'X-Return-Format': 'html', 'X-No-Cache': 'true' },
       signal: controller.signal,
     })
     const html = await upstream.text()
