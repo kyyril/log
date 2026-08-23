@@ -3,12 +3,10 @@
   import ArchiveCard from "../components/ArchiveCard.svelte";
   import ArchiveCardSkeleton from "../components/ArchiveCardSkeleton.svelte";
   import { reveal } from "../lib/reveal";
-  import type { Status } from "../types";
 
   export let navigate: (page: string) => void = () => {};
 
   let searchQuery = "";
-  let selectedStatus: Status | "all" = "all";
   let selectedType: "all" | "manga" | "novel" = "all";
 
   $: rawItems = $itemsStore.filter((item) => {
@@ -21,9 +19,7 @@
       const matchesSearch = item.title
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-      const matchesStatus =
-        selectedStatus === "all" || item.status === selectedStatus;
-      return matchesSearch && matchesStatus;
+      return matchesSearch;
     })
     .sort((a, b) => {
       const scoreA = a.score ?? (a.rating ? a.rating * 2 : -1);
@@ -99,18 +95,6 @@
         <option value="all">Manga/Novel</option>
         <option value="manga">Manga</option>
         <option value="novel">Novel</option>
-      </select>
-
-      <!-- Status Dropdown (Select) -->
-      <select
-        bind:value={selectedStatus}
-        class="px-2.5 py-2 rounded-lg bg-gray-50/50 text-xs font-semibold text-text-secondary uppercase focus:outline-none focus:bg-white transition-all cursor-pointer"
-      >
-        <option value="all">All Status</option>
-        <option value="completed">Completed</option>
-        <option value="in-progress">In Progress</option>
-        <option value="dropped">Dropped</option>
-        <option value="planned">Planned</option>
       </select>
     </div>
 
