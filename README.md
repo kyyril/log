@@ -5,43 +5,43 @@
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com)
 
-Personal Log adalah aplikasi web pelacakan pribadi yang dirancang secara minimalis dengan antarmuka bertema gelap. Aplikasi ini berfungsi sebagai pusat dokumentasi harian untuk memantau status media yang dikonsumsi (seperti manga, anime, atau buku), daftar game yang dimainkan, serta catatan personal.
+Personal Log is a minimalist personal tracking web application featuring a dark-themed user interface. It serves as a centralized daily documentation hub to monitor media consumption status (such as manga, anime, or books), played games, and personal notes.
 
 Live Preview: [logkiril.vercel.app](https://logkiril.vercel.app)
 
 ---
 
-## Fitur Utama
+## Core Features
 
-- **Game & Media Tracking:** Terintegrasi dengan basis data eksternal untuk mencatat progres game dan media hiburan secara real-time.
-- **Catatan Personal:** Menyediakan ruang terstruktur untuk menyimpan catatan, ide, atau jurnal harian.
-- **Clean & Dark UI:** Antarmuka modern yang ramah di mata menggunakan palet warna gelap dengan efek transisi yang halus.
-- **Immersive Experience:** Dilengkapi fitur pemutaran audio latar belakang untuk menemani sesi produktivitas atau pencatatan Anda.
+- **Game & Media Tracking:** Integrated with external databases to record game progress and entertainment media in real-time.
+- **Personal Notes:** Provides a structured space to store notes, ideas, or daily journals.
+- **Clean & Dark UI:** A modern, eye-friendly interface utilizing a dark color palette with smooth transition effects.
+- **Immersive Experience:** Includes background audio playback features to accompany your productivity or logging sessions.
 
 ---
 
 ## Tech Stack
 
-Aplikasi ini dibangun menggunakan tumpukan teknologi modern berperforma tinggi:
+This application is built using a high-performance modern technology stack:
 
-- **Frontend Framework:** [Svelte](https://svelte.dev) (Reaktif, cepat, dan minim overhead runtime)
-- **Bahasa:** [TypeScript](https://www.typescriptlang.org) (Untuk keamanan tipe data dan skalabilitas kode)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com) (Utilitas CSS yang fleksibel dan cepat)
-- **Build Tool:** [Vite](https://vitejs.dev) (Proses bundling dan development server yang cepat)
-- **Deployment & API:** [Vercel](https://vercel.com) (Hosting modern dengan dukungan Serverless Functions)
+- **Frontend Framework:** [Svelte](https://svelte.dev) (Reactive, fast, and minimal runtime overhead)
+- **Language:** [TypeScript](https://www.typescriptlang.org) (For type safety and code scalability)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com) (Flexible and fast utility-first CSS)
+- **Build Tool:** [Vite](https://vitejs.dev) (Fast bundling and development server setup)
+- **Deployment & API:** [Vercel](https://vercel.com) (Modern hosting platform with Serverless Functions support)
 
 ---
 
-## Struktur Proyek
+## Project Structure
 
 ```text
 log/
-├── api/                   # Serverless functions / integrasi backend API
-├── public/                # Aset statis (font, audio, gambar, favicon)
-├── src/                   # Kode sumber utama aplikasi (komponen Svelte, logika, gaya)
-│   ├── components/        # Komponen UI modular
-│   ├── routes/            # Sistem routing aplikasi
+├── api/                   # Serverless functions / backend API integrations
+├── public/                # Static assets (fonts, audio, images, favicon)
+├── src/                   # Main source code (Svelte components, logic, styles)
+│   ├── components/        # Modular UI components
+│   ├── routes/            # Application routing system
 │   └── ...
-├── tailwind.config.js     # Konfigurasi Tailwind CSS
-├── vercel.json            # Konfigurasi deployment & rewrite Vercel
-└── vite.config.ts         # Konfigurasi build dan proxy Vite
+├── tailwind.config.js     # Tailwind CSS configuration
+├── vercel.json            # Vercel deployment and rewrite configuration
+└── vite.config.ts         # Vite build and proxy configuration
