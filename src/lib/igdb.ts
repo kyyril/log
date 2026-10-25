@@ -59,7 +59,12 @@ async function fetchWithRetry(url: string, attempts = 3): Promise<Response> {
   let lastError: Error | null = null
   for (let i = 0; i < attempts; i++) {
     try {
-      const res = await fetch(url)
+      const res = await fetch(url, {
+        headers: {
+          'X-Return-Format': 'html',
+          'X-No-Cache': 'true',
+        },
+      })
       if (res.ok) return res
       lastError = new Error(`IGDB list returned ${res.status}`)
       // 403/429 are usually transient rate limits — back off and retry
@@ -73,10 +78,9 @@ async function fetchWithRetry(url: string, attempts = 3): Promise<Response> {
 }
 
 export async function fetchGameList(username: string = USERNAME, list: string = LIST_SLUG): Promise<ArchiveItem[]> {
-  // Cache buster (10-min window) so r.jina.ai and the edge cache don't serve
-  // a stale snapshot after new games are added on IGDB.
+  // Fetch directly via r.jina.ai (CORS-enabled reader service)
   const cacheBust = Math.floor(Date.now() / 600_000)
-  const base = `/api/igdb-list/${encodeURIComponent(username)}/${encodeURIComponent(list)}?cb=${cacheBust}`
+  const base = `https://r.jina.ai/https://www.igdb.com/users/${encodeURIComponent(username)}/lists/${encodeURIComponent(list)}?cb=${cacheBust}`
 
   const first = await fetchWithRetry(base)
   const firstHtml = await first.text()

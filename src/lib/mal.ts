@@ -43,46 +43,9 @@ function mapMalAnimeEntry(item: any): ArchiveItem {
   }
 }
 
-// Fetch anime from MAL API or Jikan fallback (with pagination)
+// Fetch anime from Jikan API (MAL proxy with CORS support)
 export async function fetchAnimeList(username: string = USERNAME): Promise<ArchiveItem[]> {
-  const fields = 'list_status{comments,score,num_episodes_watched},start_season,start_date'
-  const limit = 100
-
-  try {
-    const headers: Record<string, string> = {}
-    if (MAL_CLIENT_ID) {
-      headers['X-MAL-CLIENT-ID'] = MAL_CLIENT_ID
-    }
-
-    const allItems: ArchiveItem[] = []
-    let nextUrl: string | null = `/api/myanimelist/users/${username}/animelist?limit=${limit}&fields=${encodeURIComponent(fields)}`
-
-    while (nextUrl) {
-      const response = await fetch(nextUrl, { headers })
-      if (!response.ok) {
-        throw new Error(`MAL API returned ${response.status}`)
-      }
-      const json = await response.json()
-
-      const items = json.data.map(mapMalAnimeEntry)
-      allItems.push(...items)
-
-      // MAL API returns paging.next with the full URL for the next page
-      if (json.paging?.next) {
-        // The next URL from MAL is absolute (https://api.myanimelist.net/v2/...)
-        // Convert it to our proxy path
-        const nextAbsolute: string = json.paging.next
-        nextUrl = nextAbsolute.replace('https://api.myanimelist.net/v2', '/api/myanimelist')
-      } else {
-        nextUrl = null
-      }
-    }
-
-    return allItems
-  } catch (error) {
-    console.warn('MAL API failed, falling back to Jikan API:', error)
-    return fetchAnimeListJikan(username)
-  }
+  return fetchAnimeListJikan(username)
 }
 
 // Map a single MAL manga entry to an ArchiveItem
@@ -107,44 +70,9 @@ function mapMalMangaEntry(item: any): ArchiveItem {
   }
 }
 
-// Fetch manga from MAL API or Jikan fallback (with pagination)
+// Fetch manga from Jikan API (MAL proxy with CORS support)
 export async function fetchMangaList(username: string = USERNAME): Promise<ArchiveItem[]> {
-  const fields = 'list_status{comments,score,num_chapters_read},start_date,authors{first_name,last_name}'
-  const limit = 100
-
-  try {
-    const headers: Record<string, string> = {}
-    if (MAL_CLIENT_ID) {
-      headers['X-MAL-CLIENT-ID'] = MAL_CLIENT_ID
-    }
-
-    const allItems: ArchiveItem[] = []
-    let nextUrl: string | null = `/api/myanimelist/users/${username}/mangalist?limit=${limit}&fields=${encodeURIComponent(fields)}`
-
-    while (nextUrl) {
-      const response = await fetch(nextUrl, { headers })
-      if (!response.ok) {
-        throw new Error(`MAL API returned ${response.status}`)
-      }
-      const json = await response.json()
-
-      const items = json.data.map(mapMalMangaEntry)
-      allItems.push(...items)
-
-      // MAL API returns paging.next with the full URL for the next page
-      if (json.paging?.next) {
-        const nextAbsolute: string = json.paging.next
-        nextUrl = nextAbsolute.replace('https://api.myanimelist.net/v2', '/api/myanimelist')
-      } else {
-        nextUrl = null
-      }
-    }
-
-    return allItems
-  } catch (error) {
-    console.warn('MAL API failed, falling back to Jikan API:', error)
-    return fetchMangaListJikan(username)
-  }
+  return fetchMangaListJikan(username)
 }
 
 // Jikan fallback for Anime (with pagination)
