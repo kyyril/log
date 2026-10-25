@@ -20,18 +20,16 @@
 
   let lenisInstance: Lenis | null = null;
 
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-
   const navigate = (page: string) => {
     current = page;
     transitionKey += 1;
-    const url = page ? `${base}/${page}` : `${base}/`;
+    const url = page ? `/${page}` : "/";
     window.history.pushState({}, "", url);
     scrolling = true;
   };
 
   const handleRoute = () => {
-    const path = window.location.pathname.replace(new RegExp(`^${base}/?`), '');
+    const path = window.location.pathname.replace(/^\//, "");
     if (path === "anime") current = "anime";
     else if (path === "manga") current = "manga";
     else if (path === "games") current = "games";

@@ -33,7 +33,7 @@
   <div class="relative w-full h-40 md:h-56 mb-8 overflow-hidden rounded-lg">
     <img
       loading="lazy"
-      src={`${import.meta.env.BASE_URL}section/animeSection.png`}
+      src="/section/animeSection.png"
       alt="Anime Section"
       class="absolute inset-0 w-full h-full object-contain object-right"
     />

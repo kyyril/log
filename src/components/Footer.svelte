@@ -30,7 +30,7 @@
       </div>
 
       <div>
-        <img src={`${import.meta.env.BASE_URL}footerImage.png`} alt="Footer" class="w-full h-auto" />
+        <img src="/footerImage.png" alt="Footer" class="w-full h-auto" />
       </div>
     </div>
 

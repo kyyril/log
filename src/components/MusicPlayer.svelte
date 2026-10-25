@@ -8,7 +8,7 @@
   const toggle = () => {
     if (!audio) {
       context = new AudioContext()
-      audio = new Audio(`${import.meta.env.BASE_URL}music/heal.mp3`)
+      audio = new Audio('/music/heal.mp3')
       audio.loop = true
       gainNode = context.createGain()
       gainNode.gain.value = BOOST

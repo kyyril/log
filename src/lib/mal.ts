@@ -43,7 +43,7 @@ function mapMalAnimeEntry(item: any): ArchiveItem {
   }
 }
 
-// Fetch anime from MAL API via proxy (with Jikan fallback)
+// Fetch anime from MAL API or Jikan fallback (with pagination)
 export async function fetchAnimeList(username: string = USERNAME): Promise<ArchiveItem[]> {
   const fields = 'list_status{comments,score,num_episodes_watched},start_season,start_date'
   const limit = 100
@@ -67,7 +67,10 @@ export async function fetchAnimeList(username: string = USERNAME): Promise<Archi
       const items = json.data.map(mapMalAnimeEntry)
       allItems.push(...items)
 
+      // MAL API returns paging.next with the full URL for the next page
       if (json.paging?.next) {
+        // The next URL from MAL is absolute (https://api.myanimelist.net/v2/...)
+        // Convert it to our proxy path
         const nextAbsolute: string = json.paging.next
         nextUrl = nextAbsolute.replace('https://api.myanimelist.net/v2', '/api/myanimelist')
       } else {
@@ -104,7 +107,7 @@ function mapMalMangaEntry(item: any): ArchiveItem {
   }
 }
 
-// Fetch manga from MAL API via proxy (with Jikan fallback)
+// Fetch manga from MAL API or Jikan fallback (with pagination)
 export async function fetchMangaList(username: string = USERNAME): Promise<ArchiveItem[]> {
   const fields = 'list_status{comments,score,num_chapters_read},start_date,authors{first_name,last_name}'
   const limit = 100
@@ -128,6 +131,7 @@ export async function fetchMangaList(username: string = USERNAME): Promise<Archi
       const items = json.data.map(mapMalMangaEntry)
       allItems.push(...items)
 
+      // MAL API returns paging.next with the full URL for the next page
       if (json.paging?.next) {
         const nextAbsolute: string = json.paging.next
         nextUrl = nextAbsolute.replace('https://api.myanimelist.net/v2', '/api/myanimelist')

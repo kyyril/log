@@ -28,7 +28,7 @@
 <section class="py-10 md:py-24 px-3 sm:px-6 lg:px-8 max-w-6xl mx-auto">
   <div class="relative w-full h-40 md:h-56 mb-8 overflow-hidden rounded-lg">
     <img
-      src={`${import.meta.env.BASE_URL}section/gameSection.png`}
+      src="/section/gameSection.png"
       alt="Games Section"
       class="absolute inset-0 w-full h-full object-contain object-right"
     />

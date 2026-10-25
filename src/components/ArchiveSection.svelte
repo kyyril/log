@@ -10,9 +10,9 @@
   $: games = $itemsStore.filter((item) => item.category === 'games').slice(0, 8)
 
   $: sections = [
-    { title: 'ANIME', image: `${import.meta.env.BASE_URL}section/animeSection.png`, items: anime, href: '/anime', loading: $loadingAnimeStore },
-    { title: 'MANGA/NOVEL', image: `${import.meta.env.BASE_URL}section/mangaSection.png`, items: manga, href: '/manga', special: true, loading: $loadingMangaStore },
-    { title: 'GAMES', image: `${import.meta.env.BASE_URL}section/gameSection.png`, items: games, href: '/games', loading: $loadingGamesStore },
+    { title: 'ANIME', image: '/section/animeSection.png', items: anime, href: '/anime', loading: $loadingAnimeStore },
+    { title: 'MANGA/NOVEL', image: '/section/mangaSection.png', items: manga, href: '/manga', special: true, loading: $loadingMangaStore },
+    { title: 'GAMES', image: '/section/gameSection.png', items: games, href: '/games', loading: $loadingGamesStore },
   ]
 </script>
 
