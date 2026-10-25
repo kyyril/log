@@ -2,7 +2,9 @@ import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 export default defineConfig({
-  base: './',
+  // GitHub Pages serves the project site at /<repo>/, so absolute asset
+  // paths must be prefixed or the JS bundle 404s and the page stays blank.
+  base: '/log/',
   plugins: [svelte()],
   resolve: {
     alias: {
