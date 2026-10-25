@@ -30,6 +30,8 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+        env:
+          PNPM_CONFIG_IGNORE_DEP_SCRIPTS: false
 
       - run: pnpm build
         env:
