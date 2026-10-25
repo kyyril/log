@@ -11,8 +11,8 @@ export default {
         'text-secondary': '#666666',
       },
       fontFamily: {
-        sans: ['"Work Sans"', 'sans-serif'],
-        mono: ['"Roboto Mono"', 'monospace'],
+        sans: ['"Space Mono"', 'monospace'],
+        mono: ['"Space Mono"', 'monospace'],
       },
       fontSize: {
         'title-xl': ['2.5rem', { lineHeight: '1.2' }],
