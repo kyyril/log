@@ -29,9 +29,7 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
-        env:
-          PNPM_CONFIG_IGNORE_DEP_SCRIPTS: false
+      - run: pnpm install --frozen-lockfile --config.ignore-dep-scripts=false
 
       - run: pnpm build
         env:
