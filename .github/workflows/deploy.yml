@@ -29,7 +29,7 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - run: pnpm install --frozen-lockfile --config.ignore-dep-scripts=false
+      - run: pnpm install --frozen-lockfile --config.lockfile-check-supply-chain=false
 
       - run: pnpm build
         env:
