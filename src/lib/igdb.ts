@@ -72,17 +72,45 @@ async function fetchWithRetry(url: string, attempts = 3): Promise<Response> {
   throw lastError ?? new Error('IGDB list fetch failed')
 }
 
-export async function fetchGameList(username: string = USERNAME, list: string = LIST_SLUG): Promise<ArchiveItem[]> {
-  const base = `/api/igdb-list/${encodeURIComponent(username)}/${encodeURIComponent(list)}`
+async function fetchPageHtml(page: number, username: string, list: string): Promise<string> {
+  const query = page > 1 ? `?page=${page}` : ''
+  const apiPath = `/api/igdb-list/${encodeURIComponent(username)}/${encodeURIComponent(list)}${query}`
 
-  const first = await fetchWithRetry(base)
-  const firstHtml = await first.text()
+  try {
+    const res = await fetch(apiPath)
+    if (res.ok) {
+      const text = await res.text()
+      if (!text.includes('Just a moment...') && !text.includes('challenge-platform')) {
+        return text
+      }
+    }
+  } catch {
+    // server-side proxy failed or unreachable, fall through to direct reader fallback
+  }
+
+  // Fallback: Fetch via r.jina.ai directly from the user's browser.
+  // r.jina.ai has CORS enabled (Access-Control-Allow-Origin: *) and succeeds
+  // when client geolocations (e.g. Asia/ID) query without hitting datacenter IP blocks.
+  const target = `https://www.igdb.com/users/${encodeURIComponent(username)}/lists/${encodeURIComponent(list)}${query}`
+  const directRes = await fetch(`https://r.jina.ai/${target}`, {
+    headers: { 'X-Return-Format': 'html' },
+  })
+  if (!directRes.ok) throw new Error(`IGDB fetch failed: ${directRes.status}`)
+  const directHtml = await directRes.text()
+  if (directHtml.includes('Just a moment...') || directHtml.includes('challenge-platform')) {
+    throw new Error('Cloudflare challenge received from IGDB')
+  }
+  return directHtml
+}
+
+export async function fetchGameList(username: string = USERNAME, list: string = LIST_SLUG): Promise<ArchiveItem[]> {
+  const firstHtml = await fetchPageHtml(1, username, list)
   const totalPages = Math.min(getTotalPages(firstHtml), 10)
 
   const pages = [firstHtml]
   for (let page = 2; page <= totalPages; page++) {
-    const res = await fetchWithRetry(`${base}?page=${page}`)
-    pages.push(await res.text())
+    const html = await fetchPageHtml(page, username, list)
+    pages.push(html)
   }
 
   const items: ArchiveItem[] = []
