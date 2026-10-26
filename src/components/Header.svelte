@@ -13,11 +13,9 @@
     <div class="flex items-center">
       <button type="button" on:click={() => navigate('')} class="flex items-center hover:opacity-80 transition-opacity">
         <img src="/logo.png" alt="Chronicles 傑作" class="h-12 w-auto" />
-        <div class="flex flex-col leading-none ml-1 mt-1">
-          <span class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Chronicles</span>
-          <div class="flex justify-between w-full text-[10px] font-bold text-foreground -mt-0.5 select-none px-0.5">
-            <span>け</span><span>っ</span><span>さ</span><span>く</span>
-          </div>
+        <div class="flex flex-col leading-none -ml-1 mt-2">
+          <span class="text-2xl font-extrabold text-foreground tracking-tight">Chr.</span>
+          <span class="text-[10px] ml-0.5 font-bold text-foreground -mt-0.5">けっさく</span>
         </div>
       </button>
     </div>
