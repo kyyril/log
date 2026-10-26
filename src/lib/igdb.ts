@@ -73,10 +73,7 @@ async function fetchWithRetry(url: string, attempts = 3): Promise<Response> {
 }
 
 export async function fetchGameList(username: string = USERNAME, list: string = LIST_SLUG): Promise<ArchiveItem[]> {
-  // Cache buster (10-min window) so r.jina.ai and the edge cache don't serve
-  // a stale snapshot after new games are added on IGDB.
-  const cacheBust = Math.floor(Date.now() / 600_000)
-  const base = `/api/igdb-list/${encodeURIComponent(username)}/${encodeURIComponent(list)}?cb=${cacheBust}`
+  const base = `/api/igdb-list/${encodeURIComponent(username)}/${encodeURIComponent(list)}`
 
   const first = await fetchWithRetry(base)
   const firstHtml = await first.text()
@@ -84,7 +81,7 @@ export async function fetchGameList(username: string = USERNAME, list: string = 
 
   const pages = [firstHtml]
   for (let page = 2; page <= totalPages; page++) {
-    const res = await fetchWithRetry(`${base}&page=${page}`)
+    const res = await fetchWithRetry(`${base}?page=${page}`)
     pages.push(await res.text())
   }
 

@@ -23,7 +23,6 @@ export default async function handler(req: Req, res: Res) {
   const list = encodeURIComponent(String(req.query.list || 'played'))
   const params = [
     req.query.page ? `page=${encodeURIComponent(String(req.query.page))}` : '',
-    req.query.cb ? `cb=${encodeURIComponent(String(req.query.cb))}` : '',
   ]
     .filter(Boolean)
     .join('&')
@@ -34,14 +33,17 @@ export default async function handler(req: Req, res: Res) {
 
   try {
     const upstream = await fetch(`${JINA_BASE}/${target}`, {
-      // X-No-Cache: r.jina.ai ignores query-string cache busters, so it would
-      // otherwise keep serving the same stale snapshot of the IGDB page.
-      headers: { 'X-Return-Format': 'html', 'X-No-Cache': 'true' },
+      headers: { 'X-Return-Format': 'html' },
       signal: controller.signal,
     })
     const html = await upstream.text()
+
+    if (html.includes('Just a moment...') || html.includes('challenge-platform')) {
+      return res.status(503).send('Cloudflare challenge received from IGDB')
+    }
+
     res.setHeader('Content-Type', 'text/html; charset=utf-8')
-    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=3600')
+    res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=3600')
     res.status(upstream.ok ? 200 : upstream.status).send(html)
   } catch {
     res.status(502).send('igdb-list proxy failed')
