@@ -1,13 +1,13 @@
-# Personal Log
+# Chronicles けっさく
 
-[![Production Deployment](https://img.shields.io/badge/Deployment-Vercel-success?style=flat-square&logo=vercel)](https://logkiril.vercel.app)
+[![Production Deployment](https://img.shields.io/badge/Deployment-Vercel-success?style=flat-square&logo=vercel)](https://chronicles.vexr.dev)
 [![Svelte](https://img.shields.io/badge/Framework-Svelte-orange?style=flat-square&logo=svelte)](https://svelte.dev)
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com)
 
-Personal Log is a minimalist personal tracking web application featuring a dark-themed user interface. It serves as a centralized daily documentation hub to monitor media consumption status (such as manga, anime, or books), played games, and personal notes.
+Chronicles is a minimalist personal tracking web application featuring a dark-themed user interface. It serves as a centralized daily documentation hub to monitor media consumption status (such as manga, anime, or books), played games, and personal notes.
 
-Live Preview: [logkiril.vercel.app](https://logkiril.vercel.app)
+Live Preview: [chronicles.vexr.dev](https://chronicles.vexr.dev)
 
 ---
 
