@@ -4,6 +4,7 @@ import type { ArchiveItem } from '../types'
 import { fetchAnimeList, fetchMangaList } from './mal'
 import { fetchGameList } from './igdb'
 import novelsData from '../data/novels.json'
+import gamesData from '../data/games.json'
 
 export const itemsStore = writable<ArchiveItem[]>([])
 export const loadingAnimeStore = writable(false)
@@ -22,12 +23,17 @@ const CACHE_KEYS = {
 
 type SourceKey = keyof typeof CACHE_KEYS
 
-// Static novel list loaded from src/data/novels.json
+// Static lists loaded as initial/fallback data
 const novelItems: ArchiveItem[] = novelsData as ArchiveItem[]
+const fallbackGames: ArchiveItem[] = gamesData as ArchiveItem[]
 
 // Holds the latest data of every source independently — a slow/failed fetch
 // of one source never blocks or wipes the others.
-const sourceState: Record<SourceKey, ArchiveItem[]> = { anime: [], manga: [], games: [] }
+const sourceState: Record<SourceKey, ArchiveItem[]> = { 
+  anime: [], 
+  manga: [], 
+  games: fallbackGames 
+}
 
 function publish() {
   itemsStore.set([...sourceState.games, ...sourceState.anime, ...sourceState.manga, ...novelItems])
@@ -107,6 +113,7 @@ const isFreshGames = (cached: ArchiveItem[]) => cached.every(i => i.imageUrl && 
 // Each source loads independently and updates the store as soon as it's done.
 // A hanging or failing games fetch only affects the games section.
 export function loadData() {
+  publish()
   loadSource('anime', fetchAnimeList, loadingAnimeStore, hasScore)
   loadSource('manga', fetchMangaList, loadingMangaStore, hasScore)
   loadSource('games', fetchGameList, loadingGamesStore, isFreshGames)

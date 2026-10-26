@@ -38,7 +38,7 @@ export default async function handler(req: Req, res: Res) {
     })
     const html = await upstream.text()
 
-    if (html.includes('Just a moment...') || html.includes('challenge-platform')) {
+    if (html.includes('<title>Just a moment...</title>')) {
       return res.status(503).send('Cloudflare challenge received from IGDB')
     }
 

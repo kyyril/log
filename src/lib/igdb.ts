@@ -80,7 +80,7 @@ async function fetchPageHtml(page: number, username: string, list: string): Prom
     const res = await fetch(apiPath)
     if (res.ok) {
       const text = await res.text()
-      if (!text.includes('Just a moment...') && !text.includes('challenge-platform')) {
+      if (!text.includes('<title>Just a moment...</title>')) {
         return text
       }
     }
@@ -97,7 +97,7 @@ async function fetchPageHtml(page: number, username: string, list: string): Prom
   })
   if (!directRes.ok) throw new Error(`IGDB fetch failed: ${directRes.status}`)
   const directHtml = await directRes.text()
-  if (directHtml.includes('Just a moment...') || directHtml.includes('challenge-platform')) {
+  if (directHtml.includes('<title>Just a moment...</title>')) {
     throw new Error('Cloudflare challenge received from IGDB')
   }
   return directHtml
